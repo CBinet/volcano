@@ -1,0 +1,23 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{route.action}}/ {{route.name}}</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <form>
+      <div class="form-group row" *ngFor="let param of route.params">
+        <label class="col-2 center">{{param.key}}</label>
+        <select #inputType class="form-control form-control-inline col-2" (change)="onInputTypeChange(inputType.value, param.key)">
+          <option [selected]="param.type === 'String'">String</option>
+          <option [selected]="param.type === 'Number'">Number</option>
+          <option [selected]="param.type === 'Boolean'">Boolean</option>
+          <option [selected]="param.type === 'List'">List</option>
+        </select>
+        <input *ngIf="param.type === 'String'" type="text" class="form-control form-control-inline margin-left col-6" [(ngModel)]="param.value"
+          [name]="param.key">
+        <input *ngIf="param.type === 'Boolean'" type="checkbox" class="form-control form-control-inline margin-left col-6" [(ngModel)]="param.value"
+          [name]="param.key">
+        <input *ngIf="param.type === 'Number'" type="number" class="form-control form-control-inline margin-left col-6" [(ngModel)]="param.value"
+          [name]="param.key">
+      </div>
+    </form>
+  </div>
+</div>

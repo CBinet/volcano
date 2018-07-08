@@ -1,0 +1,10 @@
+.form-control-inline {
+  width: 15%;
+  display: inline-block;
+}
+
+.code {
+  font-size: 20px;
+  font-family: monospace;
+  color: black
+}
