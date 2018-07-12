@@ -1,22 +1,40 @@
 <div class="card">
   <div class="card-body">
-    <h5 class="card-title">{{route.action}}/ {{route.name}}</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <h5 class="card-title">
+      <b>{{route.action}}/</b>{{route.name}}</h5>
+    <div class="float-right">
+      <button class="btn" (click)="onAddParam()">
+        Add parameter
+      </button>
+    </div>
+    <p class="card-text">{{route.description}}</p>
     <form>
-      <div class="form-group row" *ngFor="let param of route.params">
-        <label class="col-2 center">{{param.key}}</label>
-        <select #inputType class="form-control form-control-inline col-2" (change)="onInputTypeChange(inputType.value, param.key)">
-          <option [selected]="param.type === 'String'">String</option>
-          <option [selected]="param.type === 'Number'">Number</option>
-          <option [selected]="param.type === 'Boolean'">Boolean</option>
-          <option [selected]="param.type === 'List'">List</option>
-        </select>
-        <input *ngIf="param.type === 'String'" type="text" class="form-control form-control-inline margin-left col-6" [(ngModel)]="param.value"
-          [name]="param.key">
-        <input *ngIf="param.type === 'Boolean'" type="checkbox" class="form-control form-control-inline margin-left col-6" [(ngModel)]="param.value"
-          [name]="param.key">
-        <input *ngIf="param.type === 'Number'" type="number" class="form-control form-control-inline margin-left col-6" [(ngModel)]="param.value"
-          [name]="param.key">
+      <div class="container">
+        <h6>Parameters</h6>
+        <div class="row" *ngFor="let param of route.params">
+          <select #inputType class="form-control form-control-inline code col-2" style="margin-left: 25px; margin-top: 10px;" (change)="onInputTypeChange(inputType.value, param.key)">
+            <option [selected]="param.type === 'String'">String</option>
+            <option [selected]="param.type === 'Number'">Number</option>
+            <option [selected]="param.type === 'Boolean'">Boolean</option>
+            <option [selected]="param.type === 'List'">List</option>
+            <option [selected]="param.type === 'List'">Object</option>
+          </select>
+          <input type="text" class="form-control form-control-inline code col-7" style="margin-left: 25px; margin-top: 10px;" [value]="param.key"
+            [name]="param.key + 'Key'">
+          <div class="float-right col-2">
+            <button class="btn btn-sm margin-left" style="margin-left: 15px;" (click)="onMoveUp()">
+              <i class="fas fa-arrow-up"></i>
+            </button>
+
+            <button class="btn btn-sm margin-left" style="margin-left: 15px;" (click)="onMoveDown()">
+              <i class="fas fa-arrow-down"></i>
+            </button>
+
+            <button class="btn btn-sm margin-left" (click)="onDeleteParam(param.key)" style="margin-left: 15px;">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   </div>

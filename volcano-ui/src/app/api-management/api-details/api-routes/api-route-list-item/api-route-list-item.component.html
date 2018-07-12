@@ -8,20 +8,20 @@
     </select>
   </b>
   <a class="code" data-toggle="collapse" [attr.href]="'#' + route.id + 'Content'">
-    / {{route.name}}
+    /{{route.name}}
   </a>
 
   <div class="float-right">
 
-    <button class="margin-left" (click)="onMoveUp()">
-        <i class="fas fa-arrow-up"></i>
+    <button class="btn btn-sm margin-left" style="margin-left: 15px;" (click)="onMoveUp()">
+      <i class="fas fa-arrow-up"></i>
     </button>
 
-    <button class="margin-left" (click)="onMoveDown()">
-        <i class="fas fa-arrow-down"></i>
+    <button class="btn btn-sm margin-left" style="margin-left: 15px;" (click)="onMoveDown()">
+      <i class="fas fa-arrow-down"></i>
     </button>
 
-    <button class="margin-left" (click)="onDelete()">
+    <button class="btn btn-sm margin-left" style="margin-left: 15px;" (click)="onDelete()">
       <i class="fas fa-trash"></i>
     </button>
   </div>

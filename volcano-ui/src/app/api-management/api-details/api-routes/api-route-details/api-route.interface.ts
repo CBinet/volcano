@@ -5,5 +5,6 @@ export interface ApiRoute {
   id: string;
   action: HttpAction;
   name: string;
+  description: string;
   params: RouteParam[];
 }

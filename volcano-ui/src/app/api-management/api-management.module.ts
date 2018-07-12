@@ -12,6 +12,8 @@ import { ApiRoutesComponent } from './api-details/api-routes/api-routes.componen
 import { ApiManagementRoutingModule } from './api-management-routing.module';
 import { ConfirmModalComponent } from './common/confirm-modal/confirm-modal.component';
 import { ApiManagementService } from './services/api-management.service';
+import { ApiRepository } from './services/api.repository';
+import { InMemoryApiRepository } from './services/in-memory-api.repository';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import { ApiManagementService } from './services/api-management.service';
     ConfirmModalComponent
   ],
   providers: [
+    {provide: ApiRepository, useClass: InMemoryApiRepository},
     ApiManagementService
   ]
 })
