@@ -1,6 +1,6 @@
-import { HttpAction } from '../../http/http-action.enum';
+import { HttpAction } from '../../../http/http-action.enum';
 
-export interface Operation {
+export interface HttpOperation {
     action: HttpAction;
     route: string;
     operationName: string;

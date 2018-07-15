@@ -7,7 +7,7 @@ import { HttpStatusCode } from '../core/http/http-status-code.enum';
 import { JsonResult } from '../core/http/results/json-result';
 import { Inject } from '../core/injection/decorators/inject.decorator';
 import { ApiController } from '../core/volcano/controllers/api-controller';
-import { Controller } from '../core/volcano/controllers/controller.decorator';
+import { Controller } from '../core/volcano/controllers/api-controller.decorator';
 import { CarService } from '../services/car.service';
 
 @Controller()
@@ -28,9 +28,9 @@ export class CarController extends ApiController {
         return new JsonResult(HttpStatusCode.OK, car);
     }
 
-    @POST('cars/:id')
-    addCar(id: string, car: Car): JsonResult {
-        this.carService.add(id, car);
+    @POST('cars')
+    addCar(car: Car): JsonResult {
+        this.carService.add(car);
         return new JsonResult(HttpStatusCode.CREATED);
     }
 

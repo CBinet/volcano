@@ -1,6 +1,6 @@
 import { HttpAction } from "../http-action.enum";
-import { Operation } from "../../volcano/operations/operation";
-import { OperationRegister } from "../../volcano/operations/operation-register";
+import { HttpOperation } from "../../volcano/operations/http/http-operation";
+import { HttpOperationRegister } from "../../volcano/operations/http/http-operation-register";
 
 export class HttpActionFactory {
     
@@ -14,7 +14,7 @@ export class HttpActionFactory {
 
             const innerFunction = HttpActionFactory.extractInnerFunction(descriptor);
 
-            const operation: Operation = {
+            const operation: HttpOperation = {
                 action,
                 route,
                 operationName: propertyKey,
@@ -23,7 +23,7 @@ export class HttpActionFactory {
                 function: innerFunction
             };
 
-            OperationRegister.register(operation);
+            HttpOperationRegister.register(operation);
 
             return descriptor;
         }

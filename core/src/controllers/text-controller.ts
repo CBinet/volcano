@@ -1,4 +1,4 @@
-import { Controller } from "../core/volcano/controllers/controller.decorator";
+import { Controller } from "../core/volcano/controllers/api-controller.decorator";
 import { ApiController } from "../core/volcano/controllers/api-controller";
 import { TextResult } from "../core/http/results/text-result";
 import { HttpStatusCode } from "../core/http/http-status-code.enum";

@@ -2,5 +2,5 @@ import { Request, Response } from 'express-serve-static-core';
 
 export abstract class Middleware {
 
-    abstract intercept(request: Request): void;
+    abstract intercept(request: Request, response: Response): boolean;
 }

@@ -3,7 +3,8 @@ import { Request, Response } from 'express-serve-static-core';
 
 export class Logger extends Middleware {
 
-    intercept(request: Request) {
+    intercept(request: Request, response: Response): boolean {
         console.log('I am interceptor');
+        return true;
     }
 }

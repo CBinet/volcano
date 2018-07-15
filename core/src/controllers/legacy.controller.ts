@@ -1,7 +1,7 @@
 import { GET } from '../core/http/actions/get-action.decorator';
 import { XmlResult } from '../core/http/results/xml-result';
 import { ApiController } from '../core/volcano/controllers/api-controller';
-import { Controller } from '../core/volcano/controllers/controller.decorator';
+import { Controller } from '../core/volcano/controllers/api-controller.decorator';
 import { HttpStatusCode } from '../core/http/http-status-code.enum';
 
 @Controller()

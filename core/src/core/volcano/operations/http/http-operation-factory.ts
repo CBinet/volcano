@@ -1,25 +1,33 @@
 import { Request, Response } from 'express-serve-static-core';
 
-import { ControllerRegister } from '../controllers/controller-register';
-import { Operation } from './operation';
-import { Result } from '../../http/results/result';
-import { MiddlewareRegister } from '../middlewares/middleware-register';
+import { ControllerRegister } from '../../controllers/api-controller-register';
+import { HttpOperation } from './http-operation';
+import { Result } from '../../../http/results/result';
+import { MiddlewareRegister } from '../../middlewares/middleware-register';
 
-export class OperationFactory {
+export class HttpOperationFactory {
 
-    static createOperation(operation: Operation, request: Request, response: Response) {
+    static createOperation(operation: HttpOperation, request: Request, response: Response) {
         const middlewares = MiddlewareRegister.resolve(operation.controller);
         let params: any[] = this.extractRequestParameters(operation.params, request);
         try {
-            middlewares.forEach(middleware => {
-                middleware.intercept(request);
-            });
-            const result: Result = this.callInnerOperation(operation, params);
-            result.sendWith(response);
+            var responseSent: boolean = HttpOperationFactory.applyMiddlewares(middlewares, request, response);
+            if (!responseSent) {
+                const result: Result = this.callInnerOperation(operation, params);
+                result.sendWith(response);
+            }
         }
         catch (error) {
             this.sendErrorDetails(error, response);
         }
+    }
+
+    private static applyMiddlewares(middlewares, request: Request, response: Response) {
+        var responseSent: boolean = false;
+        middlewares.reverse().forEach(middleware => {
+            responseSent = responseSent == true ? true : !middleware.intercept(request, response);
+        });
+        return responseSent;
     }
 
     private static extractRequestParameters(paramKeys: any[], request: Request) {
@@ -32,7 +40,7 @@ export class OperationFactory {
         return params;
     }
     
-    private static callInnerOperation(operation: Operation, params: any[]): Result {
+    private static callInnerOperation(operation: HttpOperation, params: any[]): Result {
         const controller = ControllerRegister.resolve(operation.controller);
         const result: Result = controller[operation.operationName].apply(controller, params);
         return result;

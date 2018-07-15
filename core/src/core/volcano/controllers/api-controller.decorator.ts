@@ -1,5 +1,5 @@
 import { ApiController } from "./api-controller";
-import { ControllerRegister } from "./controller-register";
+import { ControllerRegister } from "./api-controller-register";
 
 export const Controller = () : (target: any) => void => {
     return (target: any) => {

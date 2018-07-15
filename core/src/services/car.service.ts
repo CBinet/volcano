@@ -18,9 +18,8 @@ export class CarService {
         return this.cars.get(id);
     }
 
-    add(id: string, car: Car): void {
-        car.id = id;
-        this.cars.set(id, car);
+    add(car: Car): void {
+        this.cars.set(car.id, car);
     }
 
     update(id: string, car: Car): void {
@@ -31,7 +30,6 @@ export class CarService {
     }
 
     delete(id: string): void {
-        throw new Error(`Car with id->${id} not found`);
         this.cars.delete(id);
     }
 }
