@@ -1,8 +1,8 @@
-import { HtmlResult } from '../core/http/results/html-result';
-import { ApiController } from '../core/volcano/controllers/api-controller';
-import { Controller } from '../core/volcano/controllers/api-controller.decorator';
-import { GET } from '../core/http/actions/get-action.decorator';
-import { HttpStatusCode } from '../core/http/http-status-code.enum';
+import { GET } from '../volcano/http/actions/get-action.decorator';
+import { ApiController } from '../volcano/http/controllers/api-controller';
+import { Controller } from '../volcano/http/controllers/api-controller.decorator';
+import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
+import { HtmlResult } from '../volcano/http/results/html-result';
 
 @Controller()
 export class PagesController extends ApiController {

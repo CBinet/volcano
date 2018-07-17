@@ -1,57 +1,31 @@
 import bodyParser = require('body-parser');
 import express = require('express');
-import * as WebSocket from 'ws';
 import { Express, Request, Response } from 'express-serve-static-core';
 import * as http from 'http';
+import * as WebSocket from 'ws';
 
 import { CarController } from './controllers/car.controller';
-import { PingController } from './controllers/ping.controller';
-import { HttpAction } from './core/http/http-action.enum';
-import { HttpOperation } from './core/volcano/operations/http/http-operation';
-import { HttpOperationRegister } from './core/volcano/operations/http/http-operation-register';
-import { HttpOperationFactory } from './core/volcano/operations/http/http-operation-factory';
-import { PagesController } from './controllers/pages.controller';
-import { LegacyController } from './controllers/legacy.controller';
-import { TextController } from './controllers/text-controller';
-import { Logger } from './middlewares/logger.middleware';
-import { Guard } from './middlewares/guard.middleware';
-import { WsOperation } from './core/volcano/operations/ws/ws-operation';
 import { ChatController } from './controllers/chat.controller';
-import { Message } from './core/ws/messages/message';
-import { ControllerRegister } from './core/volcano/controllers/api-controller-register';
-import { WsOperationRegister } from './core/volcano/operations/ws/ws-operation-register';
+import { LegacyController } from './controllers/legacy.controller';
+import { PagesController } from './controllers/pages.controller';
+import { PingController } from './controllers/ping.controller';
+import { TextController } from './controllers/text-controller';
+import { Guard } from './middlewares/guard.middleware';
+import { Logger } from './middlewares/logger.middleware';
+import { HttpAction } from './volcano/http/actions/http-action.enum';
+import { HttpOperation } from './volcano/http/operations/http-operation';
+import { HttpOperationFactory } from './volcano/http/operations/http-operation-factory';
+import { HttpOperationRegister } from './volcano/http/operations/http-operation-register';
+import { Message } from './volcano/ws/messages/message';
+import { WsOperation } from './volcano/ws/operations/ws-operation';
+import { WsOperationRegister } from './volcano/ws/operations/ws-operation-register';
+import { WebsocketResponse } from './volcano/ws/responses/websocket-response';
 
 const app: Express = express();
 app.use(bodyParser.json());
 const PORT = 3000;
 
 const server = http.createServer(app);
-
-// const wsOperations: WsOperation[] = [
-//     {
-//         route: '/chat',
-//         controller: 'ChatController',
-//         operationName: 'operationName',
-//         onConnect: () => {return 'Welcome'},
-//         onMessage: new Map([
-//             ['all', {
-//                 function: (message) => {
-//                     console.log(message)
-//                     return {person: 'all', message};
-//                 },
-//                 params: ['message']
-//             }],
-//             ['whisper', {
-//                 function: (person, message) => {
-//                     console.log(message)
-//                     return {person: person, message};
-//                 },
-//                 params: ['person', 'message']
-//             }],
-//         ]),
-//         onDisconnect: () => {return 'Goodbye'}
-//     }
-// ];
 
 const wsOperations: WsOperation[] = WsOperationRegister.get();
 
@@ -64,14 +38,19 @@ wsOperations.forEach(operation => {
         ws.on('message', (rawMessage: string) => {
             const message: Message = JSON.parse(rawMessage);
             console.log('received: %s', rawMessage);
-            const innerFunction = operation.onMessage.get(message.message);
+            const innerFunction = operation.onMessage[message.message];
             const params = extractParameters(innerFunction.params, message.content);
             params.push(wss);
-            const result = innerFunction.function.apply(this, params);
-            ws.send(result.message);
+            const result: WebsocketResponse = innerFunction.function.apply(this, params);
+            result.sendWith(wss, ws);
         });
 
-        ws.send(operation.onConnect());
+        ws.on('close', () => {
+            // ws.send(operation.onDisconnect()); // TODO : Check why it shits
+        });
+
+        const onConnect = operation.onConnect();
+        onConnect.sendWith(wss, ws);
     });
 
 });
@@ -136,7 +115,6 @@ function addDeleteOperation(app: Express, operation: HttpOperation) {
 
 function extractParameters(params: string[], content: object): any[] {
     let extractedParams = [];
-    console.log(extractedParams.length);
     params.forEach(param => {
         extractedParams.push(content[param])
     });

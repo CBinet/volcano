@@ -1,9 +1,9 @@
 import { Request, Response } from 'express-serve-static-core';
 
-import { ControllerRegister } from '../../controllers/api-controller-register';
-import { HttpOperation } from './http-operation';
-import { Result } from '../../../http/results/result';
 import { MiddlewareRegister } from '../../middlewares/middleware-register';
+import { ControllerRegister } from '../controllers/api-controller-register';
+import { Result } from '../results/result';
+import { HttpOperation } from './http-operation';
 
 export class HttpOperationFactory {
 

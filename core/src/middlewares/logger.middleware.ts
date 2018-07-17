@@ -1,5 +1,6 @@
-import { Middleware } from "../core/volcano/middlewares/middleware";
 import { Request, Response } from 'express-serve-static-core';
+
+import { Middleware } from '../volcano/middlewares/middleware';
 
 export class Logger extends Middleware {
 

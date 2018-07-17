@@ -8,6 +8,10 @@ export class WsOperationRegister {
         WsOperationRegister.operations.set(operation.route, operation);
     }
 
+    static resolve(operationName: string): WsOperation {
+        return WsOperationRegister.operations.get(operationName);
+    }
+
     static get(): WsOperation[] {
         const operations = []
         WsOperationRegister

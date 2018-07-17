@@ -1,6 +1,6 @@
-import { HttpAction } from "../http-action.enum";
-import { HttpOperation } from "../../volcano/operations/http/http-operation";
-import { HttpOperationRegister } from "../../volcano/operations/http/http-operation-register";
+import { HttpAction } from "./http-action.enum";
+import { HttpOperation } from "../operations/http-operation";
+import { HttpOperationRegister } from "../operations/http-operation-register";
 
 export class HttpActionFactory {
     

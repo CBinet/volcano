@@ -1,6 +1,6 @@
 import { Request, Response } from 'express-serve-static-core';
 
-import { Middleware } from '../core/volcano/middlewares/middleware';
+import { Middleware } from '../volcano/middlewares/middleware';
 
 export class Guard extends Middleware {
     

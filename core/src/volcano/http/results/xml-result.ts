@@ -1,7 +1,6 @@
 var xml = require('xml');
 
 import { Result } from "./result";
-import { HttpStatusCode } from "../http-status-code.enum";
 import { Response } from 'express-serve-static-core';
 
 export class XmlResult extends Result {

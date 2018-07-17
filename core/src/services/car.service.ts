@@ -1,5 +1,5 @@
-import { Injectable } from "../core/injection/decorators/injectable.decorator";
-import { Car } from "../common/models/car";
+import { Car } from '../common/models/car';
+import { Injectable } from '../volcano/injection/decorators/injectable.decorator';
 
 @Injectable(CarService)
 export class CarService {

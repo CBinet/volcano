@@ -1,14 +1,14 @@
 import { Car } from '../common/models/car';
-import { DELETE } from '../core/http/actions/delete-action.decorator';
-import { GET } from '../core/http/actions/get-action.decorator';
-import { POST } from '../core/http/actions/post-action.decorator';
-import { PUT } from '../core/http/actions/put-action.decorator';
-import { HttpStatusCode } from '../core/http/http-status-code.enum';
-import { JsonResult } from '../core/http/results/json-result';
-import { Inject } from '../core/injection/decorators/inject.decorator';
-import { ApiController } from '../core/volcano/controllers/api-controller';
-import { Controller } from '../core/volcano/controllers/api-controller.decorator';
 import { CarService } from '../services/car.service';
+import { Controller } from '../volcano/http/controllers/api-controller.decorator';
+import { ApiController } from '../volcano/http/controllers/api-controller';
+import { Inject } from '../volcano/injection/decorators/inject.decorator';
+import { GET } from '../volcano/http/actions/get-action.decorator';
+import { JsonResult } from '../volcano/http/results/json-result';
+import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
+import { POST } from '../volcano/http/actions/post-action.decorator';
+import { PUT } from '../volcano/http/actions/put-action.decorator';
+import { DELETE } from '../volcano/http/actions/delete-action.decorator';
 
 @Controller()
 export class CarController extends ApiController {
