@@ -11,7 +11,6 @@ export class WsActionFactory {
             }
 
             const route = `/${target.constructor.name.replace('Controller', '').toLowerCase()}`;
-            console.log(route);
 
             let operation: WsOperation = WsOperationRegister.resolve(route);
             if (!operation) {
@@ -43,7 +42,6 @@ export class WsActionFactory {
                 }
             }
             
-            console.log(operation);
             WsOperationRegister.register(operation);
 
             return descriptor;

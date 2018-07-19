@@ -9,13 +9,17 @@ import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
 import { POST } from '../volcano/http/actions/post-action.decorator';
 import { PUT } from '../volcano/http/actions/put-action.decorator';
 import { DELETE } from '../volcano/http/actions/delete-action.decorator';
+import { Logger } from '../middlewares/logger.middleware';
+import { Guard } from '../middlewares/guard.middleware';
+import { Middleware } from '../volcano/middlewares/middleware.decorator';
 
+@Middleware(Logger)
 @Controller()
 export class CarController extends ApiController {
 
     @Inject(CarService) private carService: CarService;
 
-    @GET('cars')
+    @GET('cars', )
     getCars(): JsonResult {
         const cars = this.carService.findAll();
         return new JsonResult(HttpStatusCode.OK, cars);
@@ -28,19 +32,19 @@ export class CarController extends ApiController {
         return new JsonResult(HttpStatusCode.OK, car);
     }
 
-    @POST('cars')
+    @POST('cars', [Guard])
     addCar(car: Car): JsonResult {
         this.carService.add(car);
         return new JsonResult(HttpStatusCode.CREATED);
     }
 
-    @PUT('cars/:id')
+    @PUT('cars/:id', [Guard])
     updateCar(id: string, car: Car): JsonResult {
         this.carService.update(id, car);
         return new JsonResult(HttpStatusCode.ACCEPTED);
     }
 
-    @DELETE('cars/:id')
+    @DELETE('cars/:id', [Guard])
     deleteCar(id: string): JsonResult {
         this.carService.delete(id);
         return new JsonResult(HttpStatusCode.ACCEPTED);

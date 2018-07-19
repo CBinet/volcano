@@ -2,21 +2,34 @@ import { Middleware } from "./middleware";
 
 export class MiddlewareRegister {
 
-    private static middlewares: Map<string, Middleware[]> = new Map();
+    private static controllerMiddlewares: Map<string, Middleware[]> = new Map();
+    private static operationMiddlewares: Map<string, Middleware[]> = new Map();
 
-    static register(controllerName: string, middleware: Middleware) {
-        let middlewares = MiddlewareRegister.middlewares.get(controllerName)
+    static registerForController(controllerName: string, middleware: Middleware) {
+        let middlewares = MiddlewareRegister.controllerMiddlewares.get(controllerName)
 
         if (!middlewares) middlewares = []
         middlewares.push(middleware);
 
-        MiddlewareRegister.middlewares.set(controllerName, middlewares);
+        MiddlewareRegister.controllerMiddlewares.set(controllerName, middlewares);
     }
 
-    static resolve(controllerName: string): Middleware[] {
-        const middlewares = MiddlewareRegister.middlewares.get(controllerName);
+    static registerForOperation(route: string, middleware: Middleware) {
+        let middlewares = MiddlewareRegister.operationMiddlewares.get(route)
 
-        if (middlewares) return middlewares;
-        else return [];
+        if (!middlewares) middlewares = []
+        middlewares.push(middleware);
+
+        MiddlewareRegister.operationMiddlewares.set(route, middlewares);
+    }
+
+    static resolve(controllerName: string, route: string): Middleware[] {
+        let controllerMiddlewares = MiddlewareRegister.controllerMiddlewares.get(controllerName);
+        if (!controllerMiddlewares) controllerMiddlewares = [];
+
+        let operationMiddlewares = MiddlewareRegister.operationMiddlewares.get(route);
+        if (!operationMiddlewares) operationMiddlewares = [];
+
+        return controllerMiddlewares.concat(operationMiddlewares);
     }
 }

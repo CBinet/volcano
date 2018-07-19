@@ -1,4 +1,5 @@
 import { HttpAction } from '../actions/http-action.enum';
+import { Middleware } from '../../middlewares/middleware';
 
 export interface HttpOperation {
     action: HttpAction;
@@ -7,4 +8,5 @@ export interface HttpOperation {
     controller: string;
     params: any[];
     function: Function;
+    middlewares: Middleware[]
 }

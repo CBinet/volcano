@@ -8,27 +8,33 @@ import { WebsocketResponse } from '../volcano/ws/responses/websocket-response';
 import { JsonWebsocketResponse } from '../volcano/ws/responses/json-websocket-response';
 import { XmlWebsocketResponse } from '../volcano/ws/responses/xml-websocket-response';
 import { TextWebsocketResponse } from '../volcano/ws/responses/text-websocket-response';
+import { Inject } from '../volcano/injection/decorators/inject.decorator';
+import { ChatService } from '../services/chat.service';
 
 @WebsocketController()
 export class ChatController extends WsController {
 
+    @Inject(ChatService) chatService: ChatService;
+
     @OnConnect()
-    onConnect(server: WebSocket.Server): WebsocketResponse {
-        return new JsonWebsocketResponse({message: 'hello'}, true);
+    onConnect(websocket: WebSocket, server: WebSocket.Server): WebsocketResponse {
+        this.chatService.setOnline('abc');
+
+        return new JsonWebsocketResponse({token: 'abc'});
     }
 
     @On('all')
-    onSendMessage(message: string, server: WebSocket.Server) : WebsocketResponse {
+    onSendMessage(message: string, websocket: WebSocket, server: WebSocket.Server) : WebsocketResponse {
         return new TextWebsocketResponse(message, true);
     }
 
     @On('whisper')
-    onSendWhisper(person: string, message: string, server: WebSocket.Server) : WebsocketResponse {
-        return new XmlWebsocketResponse({message});
+    onSendWhisper(person: string, message: string, websocket: WebSocket, server: WebSocket.Server) : WebsocketResponse {
+        return new XmlWebsocketResponse({person, message});
     }
 
     @OnDisconnect()
-    onDisconnect(server: WebSocket.Server) : WebsocketResponse {
+    onDisconnect(websocket: WebSocket, server: WebSocket.Server) : WebsocketResponse {
         return new JsonWebsocketResponse({message: 'Goodbye'}, true);
     }
     

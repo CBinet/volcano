@@ -5,7 +5,7 @@ export const Middleware = (middleware) : (target: any) => void => {
         const controllerName = target.name;
         const instance = new middleware();
 
-        MiddlewareRegister.register(controllerName, instance);
+        MiddlewareRegister.registerForController(controllerName, instance);
 
         return target;
     };

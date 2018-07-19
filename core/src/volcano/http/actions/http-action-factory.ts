@@ -1,10 +1,11 @@
 import { HttpAction } from "./http-action.enum";
 import { HttpOperation } from "../operations/http-operation";
 import { HttpOperationRegister } from "../operations/http-operation-register";
+import { Middleware } from "../../middlewares/middleware";
 
 export class HttpActionFactory {
     
-    static createOperation(action: HttpAction, route: string) {
+    static createOperation(action: HttpAction, route: string, middlewares: any[]) {
         return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
             if (descriptor === undefined) {
                 descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
@@ -14,13 +15,18 @@ export class HttpActionFactory {
 
             const innerFunction = HttpActionFactory.extractInnerFunction(descriptor);
 
+            if (middlewares) {
+                middlewares = middlewares.map(middleware => new middleware())
+            }
+
             const operation: HttpOperation = {
                 action,
                 route,
                 operationName: propertyKey,
                 controller: target.constructor.name,
                 params,
-                function: innerFunction
+                function: innerFunction,
+                middlewares: middlewares
             };
 
             HttpOperationRegister.register(operation);

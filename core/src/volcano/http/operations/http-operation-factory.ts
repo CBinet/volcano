@@ -4,13 +4,19 @@ import { MiddlewareRegister } from '../../middlewares/middleware-register';
 import { ControllerRegister } from '../controllers/api-controller-register';
 import { Result } from '../results/result';
 import { HttpOperation } from './http-operation';
+import { Middleware } from '../../middlewares/middleware';
 
 export class HttpOperationFactory {
 
     static createOperation(operation: HttpOperation, request: Request, response: Response) {
-        const middlewares = MiddlewareRegister.resolve(operation.controller);
+
         let params: any[] = this.extractRequestParameters(operation.params, request);
+
         try {
+            let middlewares = MiddlewareRegister.resolve(operation.controller, operation.route);
+            const operationMiddlewares = operation.middlewares ? operation.middlewares : [];
+            middlewares = middlewares.concat(operationMiddlewares);
+
             var responseSent: boolean = HttpOperationFactory.applyMiddlewares(middlewares, request, response);
             if (!responseSent) {
                 const result: Result = this.callInnerOperation(operation, params);
@@ -22,9 +28,9 @@ export class HttpOperationFactory {
         }
     }
 
-    private static applyMiddlewares(middlewares, request: Request, response: Response) {
+    private static applyMiddlewares(middlewares: Middleware[], request: Request, response: Response): boolean {
         var responseSent: boolean = false;
-        middlewares.reverse().forEach(middleware => {
+        middlewares.reverse().forEach((middleware: Middleware) => {
             responseSent = responseSent == true ? true : !middleware.intercept(request, response);
         });
         return responseSent;
