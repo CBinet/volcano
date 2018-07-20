@@ -17,7 +17,7 @@ import { WebsocketResponse } from './ws/responses/websocket-response';
 
 export class Volcano {
 
-    static createServer(config ? : VolcanoConfig) {
+    static createServer(config?: VolcanoConfig) {
         const { server, application }: { server: http.Server; application: Express; } = Volcano.expressInitialize();
 
         const wsOperations: WsOperation[] = WsOperationRegister.get();
@@ -38,76 +38,86 @@ export class Volcano {
     }
 
     private static registerWebsocketOperation(server: http.Server): (value: WsOperation, index: number, array: WsOperation[]) => void {
-        return operation => {
+        return (operation: WsOperation) => {
             const websocketServer = new WebSocket.Server({
                 server,
                 path: operation.route
             });
             websocketServer.on('connection', (websocket: WebSocket) => {
+
+                const optionalParams = [websocket, websocketServer];
+                const controller = ControllerRegister.resolve(operation.controller);
+                
+                const onConnectResult: WebsocketResponse = operation.onConnect.apply(controller, optionalParams);
+                onConnectResult.sendWith(websocketServer, websocket);
+
                 websocket.on('message', (rawMessage: string) => {
                     const message: Message = JSON.parse(rawMessage);
-                    console.log('received: %s', rawMessage);
+
                     const innerFunction = operation.onMessage[message.message];
-                    const params = this.extractParameters(innerFunction.params, message.content);
+                    const params = this.extractMessageParameters(innerFunction.params, message.content).filter(param => param);
                     params.push(websocket, websocketServer);
-                    const controller = ControllerRegister.resolve(operation.controller);
-                    const result: WebsocketResponse = innerFunction.function.apply(controller, params);
-                    result.sendWith(websocketServer, websocket);
+
+                    const onMessageResult: WebsocketResponse = innerFunction.function.apply(controller, params);
+                    onMessageResult.sendWith(websocketServer, websocket);
                 });
+
                 websocket.on('close', () => {
-                    operation.onDisconnect().sendWith(websocketServer, websocket); // TODO : Check why it shits
+                    const onDisconnectResult: WebsocketResponse = operation.onDisconnect.apply(controller, optionalParams);
+                    onDisconnectResult.sendWith(websocketServer, websocket); // TODO : Check why it shits
                 });
-                const controller = ControllerRegister.resolve(operation.controller);
-                const onConnect = operation.onConnect.apply(controller);
-                onConnect.sendWith(websocketServer, websocket);
+
             });
         };
     }
 
-    private static registerHttpOperation(application: Express): (value: HttpOperation, index: number, array: HttpOperation[]) => void {
-        return (operation: HttpOperation) => {
-            switch (operation.action) {
-                case HttpAction.GET:
-                        {
-                            application.get(`/${operation.route}`, (request: Request, response: Response) => {
-                            HttpOperationFactory.createOperation(operation, request, response);
-                        });
-                        break;
-                    }
-                case HttpAction.POST:
-                        {
-                            application.post(`/${operation.route}`, (request: Request, response: Response) => {
-                            HttpOperationFactory.createOperation(operation, request, response);
-                        });
-                        break;
-                    }
-                case HttpAction.PUT:
-                        {
-                            application.put(`/${operation.route}`, (request: Request, response: Response) => {
-                            HttpOperationFactory.createOperation(operation, request, response);
-                        });
-                        break;
-                    }
-                case HttpAction.DELETE:
-                        {
-                            application.delete(`/${operation.route}`, (request: Request, response: Response) => {
-                            HttpOperationFactory.createOperation(operation, request, response);
-                        });
-                        break;
-                    }
-                default:
-                    {
-                        throw new Error(`Unknown Http action: ${operation.action}`);
-                    }
-            }
-        };
-    }
-
-    private static extractParameters(params: string[], content: object): any[] {
+    private static extractMessageParameters(params: string[], content: object): any[] {
         let extractedParams = [];
         params.forEach(param => {
             extractedParams.push(content[param]);
         });
         return extractedParams;
     }
+
+    private static registerHttpOperation(application: Express): (value: HttpOperation, index: number, array: HttpOperation[]) => void {
+
+        return (operation: HttpOperation) => {
+
+            const route: string = `/${operation.route}`;
+
+            switch (operation.action) {
+                case HttpAction.GET:
+                {
+                    application.get(route, Volcano.createHttpOperation(operation));
+                    break;
+                }
+                case HttpAction.POST:
+                {
+                    application.post(route, Volcano.createHttpOperation(operation));
+                    break;
+                }
+                case HttpAction.PUT:
+                {
+                    application.put(route, Volcano.createHttpOperation(operation));
+                    break;
+                }
+                case HttpAction.DELETE:
+                {
+                    application.delete(route, Volcano.createHttpOperation(operation));
+                    break;
+                }
+                default:
+                {
+                    throw new Error(`Unknown Http action: ${operation.action}`);
+                }
+            }
+        };
+    }
+
+    private static createHttpOperation(operation: HttpOperation) {
+        return (request: Request, response: Response) => {
+            HttpOperationFactory.createOperation(operation, request, response);
+        };
+    }
+
 }
