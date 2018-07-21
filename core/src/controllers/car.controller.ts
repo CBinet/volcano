@@ -9,9 +9,9 @@ import { PUT } from '../volcano/http/actions/put-action.decorator';
 import { ApiController } from '../volcano/http/controllers/api-controller';
 import { Controller } from '../volcano/http/controllers/api-controller.decorator';
 import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
+import { Middleware } from '../volcano/http/middlewares/http-middleware.decorator';
 import { JsonResult } from '../volcano/http/results/json-result';
 import { Inject } from '../volcano/injection/decorators/inject.decorator';
-import { Middleware } from '../volcano/http/middlewares/http-middleware.decorator';
 
 @Middleware(Logger)
 @Controller()
@@ -19,7 +19,7 @@ export class CarController extends ApiController {
 
     @Inject(CarService) private carService: CarService;
 
-    @GET('cars', )
+    @GET('cars')
     getCars(): JsonResult {
         const cars = this.carService.findAll();
         return new JsonResult(HttpStatusCode.OK, cars);
