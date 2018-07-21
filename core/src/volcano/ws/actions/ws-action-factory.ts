@@ -4,7 +4,7 @@ import { WsOperation } from "../operations/ws-operation";
 
 export class WsActionFactory {
 
-    static createOperation(operationKey:string, action: WsAction) {
+    static createOperation(operationKey:string, action: WsAction, middlewares: any[]) {
         return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
             if (descriptor === undefined) {
                 descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
@@ -12,32 +12,53 @@ export class WsActionFactory {
 
             const route = `/${target.constructor.name.replace('Controller', '').toLowerCase()}`;
 
+            if (middlewares) {
+                middlewares = middlewares.map(middleware => new middleware())
+            }
+
             let operation: WsOperation = WsOperationRegister.resolve(route);
             if (!operation) {
                 operation = {
                     controller: target.constructor.name,
                     route,
-                    onConnect: () => {},
+                    onConnect: {
+                        function: () => {},
+                        params: [],
+                        middlewares: []
+                    },
                     onMessage: new Map(),
-                    onDisconnect: () => {},
+                    onDisconnect: {
+                        function: () => {},
+                        params: [],
+                        middlewares: []
+                    },
                     operationName: operationKey
                 }
             }
 
             switch (action) {
                 case WsAction.OnConnect: {
-                    operation.onConnect = descriptor.value;
+                    operation.onConnect = {
+                        function: descriptor.value,
+                        params: [],
+                        middlewares: middlewares
+                    }
                     break;
                 }
                 case WsAction.OnMessage: {
                     operation.onMessage[operationKey] = {
                         function: descriptor.value,
-                        params: descriptor.value.toString().split('(')[1].split(')')[0].split(',').map(s => s.trim())
+                        params: descriptor.value.toString().split('(')[1].split(')')[0].split(',').map(s => s.trim()),
+                        middlewares
                     }
                     break;
                 }
                 case WsAction.OnDisconnect: {
-                    operation.onDisconnect = descriptor.value;
+                    operation.onDisconnect = {
+                        function: descriptor.value,
+                        params: [],
+                        middlewares: middlewares
+                    }
                     break;
                 }
             }

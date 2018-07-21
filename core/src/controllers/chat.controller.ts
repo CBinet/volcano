@@ -12,13 +12,17 @@ import { WebsocketResponse } from '../volcano/ws/responses/websocket-response';
 import { XmlWebsocketResponse } from '../volcano/ws/responses/xml-websocket-response';
 import { Server } from '../volcano/ws/server/server';
 import { Websocket } from '../volcano/ws/server/websocket';
+import { Middleware } from '../volcano/http/middlewares/http-middleware.decorator';
+import { Logger } from '../middlewares/ws/logger.ws-middleware';
+import { Guard } from '../middlewares/ws/guard.ws-middleware';
 
+@Middleware(Logger)
 @WebsocketController()
 export class ChatController extends WsController {
 
     @Inject(ChatService) chatService: ChatService;
 
-    @OnConnect()
+    @OnConnect([Logger])
     onConnect(websocket: Websocket, server: Server): WebsocketResponse {
         const id = Guid.generate();
 
@@ -28,17 +32,17 @@ export class ChatController extends WsController {
         return new JsonWebsocketResponse({token: id});
     }
 
-    @On('all')
+    @On('all', [Guard, Logger])
     onSendMessage(message: string, websocket: Websocket, server: Server) : WebsocketResponse {
         return new TextWebsocketResponse(message, true);
     }
 
-    @On('whisper')
+    @On('whisper', [Guard, Logger])
     onSendWhisper(person: string, message: string, websocket: Websocket, server: Server) : WebsocketResponse {
         return new XmlWebsocketResponse({person, message});
     }
 
-    @OnDisconnect()
+    @OnDisconnect([Logger])
     onDisconnect(websocket: Websocket, server: Server) : WebsocketResponse {
         return new JsonWebsocketResponse({message: 'Goodbye'}, true);
     }

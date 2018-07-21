@@ -1,17 +1,17 @@
 import { Car } from '../common/models/car';
+import { Guard } from '../middlewares/http/guard.http-middleware';
+import { Logger } from '../middlewares/http/logger.http-middleware';
 import { CarService } from '../services/car.service';
-import { Controller } from '../volcano/http/controllers/api-controller.decorator';
-import { ApiController } from '../volcano/http/controllers/api-controller';
-import { Inject } from '../volcano/injection/decorators/inject.decorator';
+import { DELETE } from '../volcano/http/actions/delete-action.decorator';
 import { GET } from '../volcano/http/actions/get-action.decorator';
-import { JsonResult } from '../volcano/http/results/json-result';
-import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
 import { POST } from '../volcano/http/actions/post-action.decorator';
 import { PUT } from '../volcano/http/actions/put-action.decorator';
-import { DELETE } from '../volcano/http/actions/delete-action.decorator';
-import { Logger } from '../middlewares/logger.middleware';
-import { Guard } from '../middlewares/guard.middleware';
-import { Middleware } from '../volcano/middlewares/middleware.decorator';
+import { ApiController } from '../volcano/http/controllers/api-controller';
+import { Controller } from '../volcano/http/controllers/api-controller.decorator';
+import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
+import { JsonResult } from '../volcano/http/results/json-result';
+import { Inject } from '../volcano/injection/decorators/inject.decorator';
+import { Middleware } from '../volcano/http/middlewares/http-middleware.decorator';
 
 @Middleware(Logger)
 @Controller()

@@ -4,7 +4,7 @@ export interface WsOperation {
     route: string;
     operationName: string;
     controller: string;
-    onConnect: () => any;
+    onConnect: FunctionSignature;
     onMessage: Map<string, FunctionSignature>;
-    onDisconnect: () => any;
+    onDisconnect: FunctionSignature;
 }

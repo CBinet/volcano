@@ -1,4 +1,4 @@
-import { Injectable } from "../volcano/injection/decorators/injectable.decorator";
+import { Injectable } from '../volcano/injection/decorators/injectable.decorator';
 
 @Injectable(ChatService)
 export class ChatService {

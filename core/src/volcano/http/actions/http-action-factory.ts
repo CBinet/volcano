@@ -1,7 +1,7 @@
 import { HttpAction } from "./http-action.enum";
 import { HttpOperation } from "../operations/http-operation";
 import { HttpOperationRegister } from "../operations/http-operation-register";
-import { Middleware } from "../../middlewares/middleware";
+import { HttpMiddleware } from "../middlewares/http-middleware";
 
 export class HttpActionFactory {
     

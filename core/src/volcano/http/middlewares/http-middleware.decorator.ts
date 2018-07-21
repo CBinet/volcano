@@ -1,11 +1,11 @@
-import { MiddlewareRegister } from "./middleware-register";
+import { HttpMiddlewareRegister } from "./http-middleware-register";
 
 export const Middleware = (middleware) : (target: any) => void => {
     return (target: any) => {
         const controllerName = target.name;
         const instance = new middleware();
 
-        MiddlewareRegister.registerForController(controllerName, instance);
+        HttpMiddlewareRegister.registerForController(controllerName, instance);
 
         return target;
     };

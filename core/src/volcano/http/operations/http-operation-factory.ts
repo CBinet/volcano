@@ -1,10 +1,10 @@
 import { Request, Response } from 'express-serve-static-core';
 
-import { MiddlewareRegister } from '../../middlewares/middleware-register';
+import { HttpMiddlewareRegister } from '../middlewares/http-middleware-register';
 import { ControllerRegister } from '../controllers/api-controller-register';
 import { Result } from '../results/result';
 import { HttpOperation } from './http-operation';
-import { Middleware } from '../../middlewares/middleware';
+import { HttpMiddleware } from '../middlewares/http-middleware';
 
 export class HttpOperationFactory {
 
@@ -13,7 +13,7 @@ export class HttpOperationFactory {
         let params: any[] = this.extractRequestParameters(operation.params, request);
 
         try {
-            let middlewares = MiddlewareRegister.resolve(operation.controller, operation.route);
+            let middlewares = HttpMiddlewareRegister.resolve(operation.controller, operation.route);
             const operationMiddlewares = operation.middlewares ? operation.middlewares : [];
             middlewares = middlewares.concat(operationMiddlewares);
 
@@ -28,9 +28,9 @@ export class HttpOperationFactory {
         }
     }
 
-    private static applyMiddlewares(middlewares: Middleware[], request: Request, response: Response): boolean {
+    private static applyMiddlewares(middlewares: HttpMiddleware[], request: Request, response: Response): boolean {
         var responseSent: boolean = false;
-        middlewares.reverse().forEach((middleware: Middleware) => {
+        middlewares.reverse().forEach((middleware: HttpMiddleware) => {
             responseSent = responseSent == true ? true : !middleware.intercept(request, response);
         });
         return responseSent;

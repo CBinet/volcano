@@ -4,8 +4,8 @@ import { LegacyController } from './controllers/legacy.controller';
 import { PagesController } from './controllers/pages.controller';
 import { PingController } from './controllers/ping.controller';
 import { TextController } from './controllers/text-controller';
-import { Guard } from './middlewares/guard.middleware';
-import { Logger } from './middlewares/logger.middleware';
+import { Guard } from './middlewares/http/guard.http-middleware';
+import { Logger } from './middlewares/http/logger.http-middleware';
 import { Volcano } from './volcano/volcano';
 
 const PORT = 3000;
