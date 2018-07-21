@@ -1,10 +1,11 @@
 import { WebsocketResponse } from "./websocket-response";
-import * as WebSocket from 'ws';
+import { Websocket } from "../server/websocket";
+import { Server } from "../server/server";
 
 export class JsonWebsocketResponse extends WebsocketResponse {
 
-    sendWith(server: WebSocket.Server, ws: any) {
+    sendWith(server: Server, websocket: Websocket) {
         const jsonContent = JSON.stringify(this.content);
-        this.send(server, ws, jsonContent);
+        this.send(server, websocket, jsonContent);
     }
 }

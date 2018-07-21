@@ -1,10 +1,11 @@
-import { WebsocketResponse } from "./websocket-response";
-import * as WebSocket from 'ws';
+import { Server } from '../server/server';
+import { Websocket } from '../server/websocket';
+import { WebsocketResponse } from './websocket-response';
 
 export class TextWebsocketResponse extends WebsocketResponse {
 
-    sendWith(server: WebSocket.Server, ws: any) {
-        this.send(server, ws, this.content.toString());
+    sendWith(server: Server, websocket: Websocket) {
+        this.send(server, websocket, this.content.toString());
     }
 
 }

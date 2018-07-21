@@ -24,12 +24,8 @@ export class ChatController extends WsController {
 
     @OnConnect([Logger])
     onConnect(websocket: Websocket, server: Server): WebsocketResponse {
-        const id = Guid.generate();
-
-        this.chatService.setOnline(id);
-        websocket.id = id;
-
-        return new JsonWebsocketResponse({token: id});
+        const sessionId = this.chatService.setOnline(websocket);
+        return new JsonWebsocketResponse({sessionId, event: "Has come online"}, true);
     }
 
     @On('all', [Guard, Logger])
@@ -37,14 +33,15 @@ export class ChatController extends WsController {
         return new TextWebsocketResponse(message, true);
     }
 
-    @On('whisper', [Guard, Logger])
+    @On('whisper', [Logger])
     onSendWhisper(person: string, message: string, websocket: Websocket, server: Server) : WebsocketResponse {
-        return new XmlWebsocketResponse({person, message});
+        const clients: Websocket[] = this.findClientById(server, person);
+        return new XmlWebsocketResponse({person, message}, false, clients);
     }
 
     @OnDisconnect([Logger])
     onDisconnect(websocket: Websocket, server: Server) : WebsocketResponse {
-        return new JsonWebsocketResponse({message: 'Goodbye'}, true);
+        return new JsonWebsocketResponse({message: 'Goodbye', event: "Has disconnected"}, true);
     }
     
 }

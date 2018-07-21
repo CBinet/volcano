@@ -6,7 +6,7 @@ import { Server } from '../../volcano/ws/server/server';
 export class Logger extends WsMiddleware {
 
     intercept(message: Message, websocket: Websocket, server: Server): boolean {
-        console.log('I am websocket interceptor');
+        console.log('I am websocket interceptor')
         return true;
     };
 }

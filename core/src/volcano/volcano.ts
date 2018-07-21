@@ -2,23 +2,21 @@ import bodyParser = require('body-parser');
 import express = require('express');
 import { Express, Request, Response } from 'express-serve-static-core';
 import * as http from 'http';
-import * as WebSocket from 'ws';
 
 import { HttpAction } from './http/actions/http-action.enum';
 import { ControllerRegister } from './http/controllers/api-controller-register';
+import { HttpMiddlewareRegister } from './http/middlewares/http-middleware-register';
 import { HttpOperation } from './http/operations/http-operation';
 import { HttpOperationFactory } from './http/operations/http-operation-factory';
 import { HttpOperationRegister } from './http/operations/http-operation-register';
 import { VolcanoConfig } from './volcano.config';
 import { Message } from './ws/messages/message';
+import { WsMiddleware } from './ws/middlewares/ws-middleware';
 import { WsOperation } from './ws/operations/ws-operation';
 import { WsOperationRegister } from './ws/operations/ws-operation-register';
 import { WebsocketResponse } from './ws/responses/websocket-response';
-import { HttpMiddlewareRegister } from './http/middlewares/http-middleware-register';
-import { HttpMiddleware } from './http/middlewares/http-middleware';
-import { Websocket } from './ws/server/websocket';
 import { Server } from './ws/server/server';
-import { WsMiddleware } from './ws/middlewares/ws-middleware';
+import { Websocket } from './ws/server/websocket';
 
 export class Volcano {
 
@@ -44,11 +42,11 @@ export class Volcano {
 
     private static registerWebsocketOperation(server: http.Server): (value: WsOperation, index: number, array: WsOperation[]) => void {
         return (operation: WsOperation) => {
-            const websocketServer = new WebSocket.Server({
+            const websocketServer = new Server({
                 server,
                 path: operation.route
             });
-            websocketServer.on('connection', (websocket: WebSocket) => {
+            websocketServer.on('connection', (websocket: Websocket) => {
 
                 const optionalParams = [websocket, websocketServer];
                 const controller = ControllerRegister.resolve(operation.controller);
@@ -56,43 +54,46 @@ export class Volcano {
 
                 let operationMiddlewares = operation.onConnect.middlewares ? operation.onConnect.middlewares : [];
                 operationMiddlewares = controllerMiddlewares.concat(operationMiddlewares);
-                console.log(operationMiddlewares);
                 Volcano.callOnConnect(controller, operation, operationMiddlewares, websocket, websocketServer, optionalParams);
 
                 websocket.on('message', (rawMessage: string) => {
                     const message: Message = JSON.parse(rawMessage);
-                    Volcano.callOnMessage(controller, operation, message, websocket, websocketServer);
+                    let operationMiddlewares = operation.onMessage[message.message].middlewares ? operation.onMessage[message.message].middlewares : [];
+                    operationMiddlewares = controllerMiddlewares.concat(operationMiddlewares);
+                    Volcano.callOnMessage(controller, operation, operationMiddlewares, message, websocket, websocketServer);
                 });
 
                 websocket.on('close', () => {
-                    const onDisconnectResult: WebsocketResponse = operation.onDisconnect.function.apply(controller, optionalParams);
-                    onDisconnectResult.sendWith(websocketServer, websocket); // TODO : Check why it shits
+                    Volcano.callOnDisconnect(controller, operation, operationMiddlewares, websocket, websocketServer, optionalParams);
                 });
 
             });
         };
     }
 
-    private static callFunction(controller: any, operation: WsOperation, message: Message, websocket: WebSocket, websocketServer: WebSocket.Server) {
-        const innerFunction = operation.onMessage[message.message];
-        const params = this.extractMessageParameters(innerFunction.params, message.content).filter(param => param);
-        params.push(websocket, websocketServer);
-        const onMessageResult: WebsocketResponse = innerFunction.function.apply(controller, params);
-        onMessageResult.sendWith(websocketServer, websocket);
+    private static callOnMessage(controller: any, operation: WsOperation, middlewares: any[], message: Message, websocket: Websocket, websocketServer: Server) {
+        var responseSent: boolean = this.applyMiddlewares(middlewares, null, <Websocket>websocket, websocketServer);
+        if (!responseSent) {
+            const innerFunction = operation.onMessage[message.message];
+            const params = this.extractMessageParameters(innerFunction.params, message.content).filter(param => param);
+            params.push(websocket, websocketServer);
+            const onMessageResult: WebsocketResponse = innerFunction.function.apply(controller, params);
+            onMessageResult.sendWith(websocketServer, websocket);
+        }
     }
 
-    private static callOnMessage(controller: any, operation: WsOperation, message: Message, websocket: WebSocket, websocketServer: WebSocket.Server) {
-        const innerFunction = operation.onMessage[message.message];
-        const params = this.extractMessageParameters(innerFunction.params, message.content).filter(param => param);
-        params.push(websocket, websocketServer);
-        const onMessageResult: WebsocketResponse = innerFunction.function.apply(controller, params);
-        onMessageResult.sendWith(websocketServer, websocket);
-    }
-
-    private static callOnConnect(controller: any, operation: WsOperation, middlewares: any[], websocket: WebSocket, websocketServer: WebSocket.Server, optionalParams: (WebSocket | WebSocket.Server)[]) {
+    private static callOnConnect(controller: any, operation: WsOperation, middlewares: any[], websocket: Websocket, websocketServer: Server, optionalParams: (Websocket | Server)[]) {
         var responseSent: boolean = this.applyMiddlewares(middlewares, null, <Websocket>websocket, websocketServer);
         if (!responseSent) {
             const onConnectResult: WebsocketResponse = operation.onConnect.function.apply(controller, optionalParams);
+            onConnectResult.sendWith(websocketServer, websocket);
+        }
+    }
+
+    private static callOnDisconnect(controller: any, operation: WsOperation, middlewares: any[], websocket: Websocket, websocketServer: Server, optionalParams: (Websocket | Server)[]) {
+        var responseSent: boolean = this.applyMiddlewares(middlewares, null, <Websocket>websocket, websocketServer);
+        if (!responseSent) {
+            const onConnectResult: WebsocketResponse = operation.onDisconnect.function.apply(controller, optionalParams);
             onConnectResult.sendWith(websocketServer, websocket);
         }
     }
