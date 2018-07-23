@@ -1,35 +1,33 @@
 import { Car } from '../common/models/car';
 import { Injectable } from '../volcano/injection/decorators/injectable.decorator';
+import { Inject } from '../volcano/injection/decorators/inject.decorator';
+import { CarRepository } from './repositories/car-repository';
+import { InMemoryCarRepository } from './repositories/in-memory-car-repository';
 
 @Injectable(CarService)
 export class CarService {
 
-    private cars: Map<string, Car> = new Map([['123', {id: '123', model: 'Toyota', year: 2002}]]);
+    // @Inject(CarRepository) private carRepository: CarRepository;
+    private carRepository: CarRepository = new InMemoryCarRepository();
 
     findAll(): Car[] {
-        const cars = [];
-        this.cars.forEach((car, key) => {
-            cars.push(car);
-        });
+        const cars = this.carRepository.findAll();
         return cars;
     }
 
     find(id: string): Car {
-        return this.cars.get(id);
+        return this.carRepository.find(id);
     }
 
     add(car: Car): void {
-        this.cars.set(car.id, car);
+        this.carRepository.add(car);
     }
 
     update(id: string, car: Car): void {
-        const updatedCar = this.cars.get(id);
-        if (car.model) updatedCar.model = car.model;
-        if (car.year) updatedCar.year = car.year;
-        this.cars.set(id, updatedCar);
+        this.carRepository.update(id, car);
     }
 
     delete(id: string): void {
-        this.cars.delete(id);
+        this.carRepository.delete(id);
     }
 }

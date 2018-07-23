@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "chalk-console": "^1.0.1",
     "express": "^4.16.3",
     "jasmine-node": "^1.14.5",
     "reflect-metadata": "^0.1.12",

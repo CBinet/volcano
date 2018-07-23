@@ -18,10 +18,17 @@ import { JsonWebsocketResponse } from './ws/responses/json-websocket-response';
 import { WebsocketResponse } from './ws/responses/websocket-response';
 import { Server } from './ws/server/server';
 import { Websocket } from './ws/server/websocket';
+import { ServiceLocator } from './injection/service-locator';
 
 export class Volcano {
 
     static createServer(config?: VolcanoConfig) {
+
+        if (config.services) {
+            config.services
+            .forEach(service => ServiceLocator.register(service.interface, service.use));
+        }
+
         const { server, application }: { server: http.Server; application: Express; } = Volcano.expressInitialize();
 
         const wsOperations: WsOperation[] = WsOperationRegister.get();

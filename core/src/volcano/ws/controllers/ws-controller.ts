@@ -8,14 +8,4 @@ export abstract class WsController {
     abstract onConnect(websocket: Websocket, server: Server) : WebsocketResponse;
 
     abstract onDisconnect(websocket: Websocket, server: Server) : WebsocketResponse;
-
-    protected findClientById(server: Server, clientId: string) {
-        const clients: Websocket[] = [];
-        server.clients.forEach((client: Websocket) => {
-            if (client.sessionId === clientId) {
-                clients.push(client);
-            }
-        });
-        return clients;
-    }
 }   

@@ -7,6 +7,12 @@ import { TextController } from './controllers/text-controller';
 import { Guard } from './middlewares/http/guard.http-middleware';
 import { Logger } from './middlewares/http/logger.http-middleware';
 import { Volcano } from './volcano/volcano';
+import { CarRepository } from './services/repositories/car-repository';
+import { InMemoryCarRepository } from './services/repositories/in-memory-car-repository';
+import { CarService } from './services/car.service';
+import { ChatService } from './services/chat.service';
+import { LogWriter } from './volcano/logger/writer/log-writer';
+import { ConsoleLogWriter } from './volcano/logger/writer/console-log-writer';
 
 const PORT = 3000;
 const server = Volcano.createServer({
@@ -21,6 +27,9 @@ const server = Volcano.createServer({
     middlewares: [
         Logger,
         Guard
+    ],
+    services: [
+        { interface: CarRepository, use: InMemoryCarRepository }
     ]
 });
 
