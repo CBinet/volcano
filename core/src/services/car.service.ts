@@ -7,8 +7,8 @@ import { InMemoryCarRepository } from './repositories/in-memory-car-repository';
 @Injectable(CarService)
 export class CarService {
 
-    // @Inject(CarRepository) private carRepository: CarRepository;
-    private carRepository: CarRepository = new InMemoryCarRepository();
+    @Inject(CarRepository) private carRepository: CarRepository;
+    // private carRepository: CarRepository = new InMemoryCarRepository();
 
     findAll(): Car[] {
         const cars = this.carRepository.findAll();

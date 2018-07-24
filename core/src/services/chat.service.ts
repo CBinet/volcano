@@ -1,6 +1,6 @@
 import { Injectable } from '../volcano/injection/decorators/injectable.decorator';
 import { Websocket } from '../volcano/ws/server/websocket';
-import { Guid } from '../volcano/utilities/guid';
+import { Guid } from '../volcano/utilities/guid/guid';
 
 @Injectable(ChatService)
 export class ChatService {

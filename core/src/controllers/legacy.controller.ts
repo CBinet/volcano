@@ -1,11 +1,7 @@
-import { GET } from '../volcano/http/actions/get-action.decorator';
-import { ApiController } from '../volcano/http/controllers/api-controller';
-import { Controller } from '../volcano/http/controllers/api-controller.decorator';
-import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
-import { XmlResult } from '../volcano/http/results/xml-result';
+import { Controller, GET, HttpController, HttpStatusCode, XmlResult } from '../volcano/http/volcano-http.module';
 
 @Controller()
-export class LegacyController extends ApiController {
+export class LegacyController extends HttpController {
 
     @GET('archives')
     getArchives(): XmlResult {

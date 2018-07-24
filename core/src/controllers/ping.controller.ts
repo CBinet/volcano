@@ -1,17 +1,18 @@
 import { Guard } from '../middlewares/http/guard.http-middleware';
 import { Logger } from '../middlewares/http/logger.http-middleware';
-import { GET } from '../volcano/http/actions/get-action.decorator';
-import { ApiController } from '../volcano/http/controllers/api-controller';
-import { Controller } from '../volcano/http/controllers/api-controller.decorator';
-import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
-import { JsonResult } from '../volcano/http/results/json-result';
-import { Middleware } from '../volcano/http/middlewares/http-middleware.decorator';
-
+import {
+    Controller,
+    GET,
+    HttpController,
+    HttpStatusCode,
+    JsonResult,
+    Middleware,
+} from '../volcano/http/volcano-http.module';
 
 @Middleware(Logger)
 @Middleware(Guard)
 @Controller()
-export class PingController extends ApiController {
+export class PingController extends HttpController {
 
     @GET('ping')
     ping(): JsonResult {

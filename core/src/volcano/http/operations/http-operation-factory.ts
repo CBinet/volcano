@@ -1,7 +1,7 @@
 import { Request, Response } from 'express-serve-static-core';
 
 import { HttpMiddlewareRegister } from '../middlewares/http-middleware-register';
-import { ControllerRegister } from '../controllers/api-controller-register';
+import { ControllerRegister } from '../controllers/http-controller-register';
 import { Result } from '../results/result';
 import { HttpOperation } from './http-operation';
 import { HttpMiddleware } from '../middlewares/http-middleware';

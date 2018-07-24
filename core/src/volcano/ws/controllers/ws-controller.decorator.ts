@@ -1,4 +1,4 @@
-import { ControllerRegister } from "../../http/controllers/api-controller-register";
+import { ControllerRegister } from "../../http/controllers/http-controller-register";
 import { WsController } from "./ws-controller";
 
 export const WebsocketController = (route?: string) : (target: any) => void => {

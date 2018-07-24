@@ -1,6 +1,6 @@
 {
-  "name": "graph-database",
-  "version": "1.0.0",
+  "name": "volcano-express",
+  "version": "1.0.1",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -18,15 +18,15 @@
     "fs": "0.0.1-security",
     "jasmine": "^3.1.0",
     "jasmine-ts": "^0.2.1",
-    "ts-node": "^6.1.1",
-    "tslint": "^5.10.0",
+    "ts-node": "^6.2.0",
+    "tslint": "^5.11.0",
     "typescript": "^2.9.2"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
     "chalk-console": "^1.0.1",
     "express": "^4.16.3",
-    "jasmine-node": "^1.14.5",
+    "jasmine-node": "^1.15.0",
     "reflect-metadata": "^0.1.12",
     "ws": "^5.2.2",
     "xml": "^1.0.1"

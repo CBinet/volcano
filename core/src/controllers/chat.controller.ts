@@ -1,17 +1,19 @@
 import { Guard } from '../middlewares/ws/guard.ws-middleware';
 import { Logger } from '../middlewares/ws/logger.ws-middleware';
 import { ChatService } from '../services/chat.service';
-import { Middleware } from '../volcano/http/middlewares/http-middleware.decorator';
-import { Inject } from '../volcano/injection/decorators/inject.decorator';
-import { On } from '../volcano/ws/actions/on-action.decorator';
-import { OnConnect } from '../volcano/ws/actions/on-connect-action.decorator';
-import { OnDisconnect } from '../volcano/ws/actions/on-disconnect-action';
-import { WsController } from '../volcano/ws/controllers/ws-controller';
-import { WebsocketController } from '../volcano/ws/controllers/ws-controller.decorator';
-import { JsonWebsocketResponse } from '../volcano/ws/responses/json-websocket-response';
-import { WebsocketResponse } from '../volcano/ws/responses/websocket-response';
-import { Server } from '../volcano/ws/server/server';
-import { Websocket } from '../volcano/ws/server/websocket';
+import { Middleware } from '../volcano/http/volcano-http.module';
+import { Inject } from '../volcano/injection/volcano-injection.module';
+import {
+    JsonWebsocketResponse,
+    On,
+    OnConnect,
+    OnDisconnect,
+    Server,
+    Websocket,
+    WebsocketController,
+    WebsocketResponse,
+    WsController,
+} from '../volcano/ws/volcano-ws.module';
 
 @Middleware(Logger)
 @WebsocketController()

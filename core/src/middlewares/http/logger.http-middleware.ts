@@ -1,5 +1,4 @@
-import { Request, Response } from 'express-serve-static-core';
-import { HttpMiddleware } from '../../volcano/http/middlewares/http-middleware';
+import { HttpMiddleware, Request, Response } from '../../volcano/http/volcano-http.module';
 
 export class Logger extends HttpMiddleware {
 

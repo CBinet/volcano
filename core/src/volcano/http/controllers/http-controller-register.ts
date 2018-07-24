@@ -1,4 +1,4 @@
-import { ApiController } from "./api-controller";
+import { HttpController } from "./http-controller";
 
 export class ControllerRegister {
     

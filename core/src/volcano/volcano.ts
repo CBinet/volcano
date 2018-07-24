@@ -4,11 +4,12 @@ import { Express, Request, Response } from 'express-serve-static-core';
 import * as http from 'http';
 
 import { HttpAction } from './http/actions/http-action.enum';
-import { ControllerRegister } from './http/controllers/api-controller-register';
+import { ControllerRegister } from './http/controllers/http-controller-register';
 import { HttpMiddlewareRegister } from './http/middlewares/http-middleware-register';
 import { HttpOperation } from './http/operations/http-operation';
 import { HttpOperationFactory } from './http/operations/http-operation-factory';
 import { HttpOperationRegister } from './http/operations/http-operation-register';
+import { ServiceLocator } from './injection/service-locator';
 import { VolcanoConfig } from './volcano.config';
 import { Message } from './ws/messages/message';
 import { WsMiddleware } from './ws/middlewares/ws-middleware';
@@ -18,7 +19,6 @@ import { JsonWebsocketResponse } from './ws/responses/json-websocket-response';
 import { WebsocketResponse } from './ws/responses/websocket-response';
 import { Server } from './ws/server/server';
 import { Websocket } from './ws/server/websocket';
-import { ServiceLocator } from './injection/service-locator';
 
 export class Volcano {
 

@@ -1,7 +1,4 @@
-import { WsMiddleware } from '../../volcano/ws/middlewares/ws-middleware';
-import { Message } from '../../volcano/ws/messages/message';
-import { Websocket } from '../../volcano/ws/server/websocket';
-import { Server } from '../../volcano/ws/server/server';
+import { Message, Server, Websocket, WsMiddleware } from '../../volcano/ws/volcano-ws.module';
 
 export class Logger extends WsMiddleware {
 

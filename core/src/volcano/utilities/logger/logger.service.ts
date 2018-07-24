@@ -1,6 +1,6 @@
 import {LogWriter} from "./writer/log-writer";
-import {ServiceLocator} from "../injection/service-locator";
 import {LogType} from "./log-type.enum";
+import { ServiceLocator } from "../../injection/service-locator";
 
 export class Logger {
 

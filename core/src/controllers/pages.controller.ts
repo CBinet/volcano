@@ -1,11 +1,7 @@
-import { GET } from '../volcano/http/actions/get-action.decorator';
-import { ApiController } from '../volcano/http/controllers/api-controller';
-import { Controller } from '../volcano/http/controllers/api-controller.decorator';
-import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
-import { HtmlResult } from '../volcano/http/results/html-result';
+import { Controller, GET, HtmlResult, HttpController, HttpStatusCode } from '../volcano/http/volcano-http.module';
 
 @Controller()
-export class PagesController extends ApiController {
+export class PagesController extends HttpController {
 
     @GET('')
     index(): HtmlResult {

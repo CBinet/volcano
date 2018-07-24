@@ -2,20 +2,22 @@ import { Car } from '../common/models/car';
 import { Guard } from '../middlewares/http/guard.http-middleware';
 import { Logger } from '../middlewares/http/logger.http-middleware';
 import { CarService } from '../services/car.service';
-import { DELETE } from '../volcano/http/actions/delete-action.decorator';
-import { GET } from '../volcano/http/actions/get-action.decorator';
-import { POST } from '../volcano/http/actions/post-action.decorator';
-import { PUT } from '../volcano/http/actions/put-action.decorator';
-import { ApiController } from '../volcano/http/controllers/api-controller';
-import { Controller } from '../volcano/http/controllers/api-controller.decorator';
-import { HttpStatusCode } from '../volcano/http/http-status-code.enum';
-import { Middleware } from '../volcano/http/middlewares/http-middleware.decorator';
-import { JsonResult } from '../volcano/http/results/json-result';
-import { Inject } from '../volcano/injection/decorators/inject.decorator';
+import {
+    Controller,
+    DELETE,
+    GET,
+    HttpController,
+    HttpStatusCode,
+    JsonResult,
+    Middleware,
+    POST,
+    PUT,
+} from '../volcano/http/volcano-http.module';
+import { Inject } from '../volcano/injection/volcano-injection.module';
 
 @Middleware(Logger)
 @Controller()
-export class CarController extends ApiController {
+export class CarController extends HttpController {
 
     @Inject(CarService) private carService: CarService;
 

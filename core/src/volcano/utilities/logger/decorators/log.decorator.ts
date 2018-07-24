@@ -1,5 +1,4 @@
 import {Logger} from "../logger.service";
-import chalk from "chalk";
 import {LogType} from "../log-type.enum";
 
 const now: () => number = require("performance-now");

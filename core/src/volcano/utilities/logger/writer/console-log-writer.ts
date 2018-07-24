@@ -1,5 +1,5 @@
 import {LogWriter} from "./log-writer";
-import {Injectable} from "../../injection/decorators/injectable.decorator";
+import { Injectable } from "../../../injection/decorators/injectable.decorator";
 
 const console: any = require("chalk-console");
 

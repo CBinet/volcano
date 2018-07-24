@@ -1,6 +1,7 @@
 import { CarRepository } from "./car-repository";
 import { Car } from "../../common/models/car";
 import { Injectable } from "../../volcano/injection/decorators/injectable.decorator";
+import { Inject } from "../../volcano/injection/decorators/inject.decorator";
 
 @Injectable(CarRepository)
 export class InMemoryCarRepository extends CarRepository {
