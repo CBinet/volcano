@@ -1,0 +1,18 @@
+{
+    "include": [
+        "**/core/*",
+        "**/examples/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ],
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "outDir": "./lib",
+        "module": "commonjs",
+        "target": "es6",
+        "sourceMap": true
+    },
+    "types": ["jasmine"]
+}
