@@ -3,7 +3,7 @@
 ## Installation
 
 ```dos
-npm install volcano-express
+npm install volcano-express --save
  ```
 
 ## Usage
@@ -30,6 +30,51 @@ const server = Volcano.createServer({
 server.listen(PORT, null, () => {
     console.log(`Server started at port ${PORT}`);
 });
+```
+
+## Dependency Injection
+
+There are multiples ways to register your services to inject them into your controllers or other services :
+
+- Using the **@Injectable** decorator from the http module :
+
+```ts
+@Injectable(CarRepository)
+export class InMemoryCarRepository {
+    ...
+}
+```
+
+- Using service registering the main file (which is the recommended way) :
+
+```ts
+const server = Volcano.createServer({
+    controllers : [...],
+    middlewares: [...],
+    services: [
+        { interface: CarRepository, use: InMemoryCarRepository }
+    ]
+});
+```
+
+- Using the **ServiceLocator** register method to register the service directly :
+
+```ts
+ServiceLocator.register(CarRepository, InMemoryCarRepository);
+```
+
+To inject the registered services into your controllers or others services, there are also a few ways.
+
+- You can use the **@Inject** decorator from the http module (recommended way) :
+
+```ts
+@Inject(CarRepository) private carRepository: CarRepository;
+```
+
+- You can also call the **ServiceLocator** resolve method to get a service instance directly :
+
+```ts
+private carRepository: CarRepository = ServiceLocator.resolve(CarRepository);
 ```
 
 ## Http Controller
@@ -85,7 +130,7 @@ export class CarController extends HttpController {
 The parameters of an **HttpAction** decorated method must be in this given order :
 The parameters from the route (i.e.: id in '/cars/:id) must be first, in appearing order. The body will always be the last parameter of a signature. **GET** decorated method cannot have a body.
 
-Exemple :
+Example :
 
 ```ts
 @PUT('cars/:id')
@@ -94,7 +139,7 @@ updateCar(id: string, car: Car): Result {
 }
 ```
 
-In the above exemple, **id** is the first parameter because it comes from the route. The last parameter (**car**) is the request body.
+In the above example, **id** is the first parameter because it comes from the route. The last parameter (**car**) is the request body.
 
 ### Return types
 
@@ -109,6 +154,61 @@ You can also extend the **Result** class to implement a custom return type:
 export class CustomResult extends Result {
 
     sendWith(response: Response): void {
+        ...
+    }
+}
+```
+
+## Http middleware
+
+You can add middlewares to intercept requests. You can create your own middleware by extending the **HttpMiddleware** class :
+
+```ts
+export class Logger extends HttpMiddleware {
+
+    intercept(request: Request, response: Response): boolean {
+        console.log('I am interceptor');
+        return true;
+    }
+}
+```
+
+You can then add a middleware on a controller, which will apply it for all the routes owned by that controller :
+
+```ts
+@Middleware(Logger) // <-- Added a middleware to all the routes
+@Controller()
+export class PingController extends HttpController {
+    ...
+}
+```
+
+You can also add it on specific routes :
+
+```ts
+@GET('ping', [Logger]) // <-- Added a middleware to this specific route
+ping(): JsonResult {
+    ...
+}
+```
+
+When you have multiple middlewares applied to a controller or route, they will always apply in order of appearance in the method signature :
+
+```ts
+@GET('ping', [Logger, Guard]) // <-- Logger will be first, Guard will be second
+ping(): JsonResult {
+    ...
+}
+```
+
+When you have middlewares on the controller and on a route, the middlewares from the controller will be applied first :
+
+```ts
+@Middleware(Logger) // <-- Logger will be first
+@Controller()
+export class PingController extends HttpController {
+    @GET('ping', [Guard]) // <-- Guard will be second
+    ping(): JsonResult {
         ...
     }
 }
