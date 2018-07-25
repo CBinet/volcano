@@ -9,6 +9,9 @@ npm install volcano-express
 ## Usage
 
 ```ts
+
+import { Volcano } from '../node_modules/volcano-express/lib/core/volcano.module';
+
 const PORT = 3000;
 const server = Volcano.createServer({
     controllers : [
