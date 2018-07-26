@@ -1,7 +1,15 @@
 {
   "name": "volcano-express",
-  "version": "1.0.17",
-  "description": "",
+  "version": "1.0.19",
+  "keywords": [
+    "express",
+    "framework",
+    "api",
+    "http",
+    "websocket",
+    "ws"
+  ],
+  "description": "A framework built on top of the express.js library",
   "main": "main.js",
   "types": "main.d.ts",
   "scripts": {
