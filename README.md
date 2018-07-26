@@ -1,35 +1,124 @@
 # Volcano
 
+- [Installation](#installation)
+- [Get started](#get-started)
+- [Dependency injection](#dependency-injection)
+- [Http Controller](#http-controller)
+- [Http Middleware](#http-middleware)
+- [Websocket Controller](#websocket-controller)
+
 ## Installation
 
 ```dos
 npm install volcano-express --save
  ```
 
-## Usage
+## Get started
+
+First, you will need a **main.ts** file where your configure and start the express server. It is also good practice to keep your controllers, middlewares and services in separated files. Here is a quick working example to get started :
+
+- main.ts : Place at the root of your source folder
 
 ```ts
-
 import { Volcano } from '../node_modules/volcano-express/lib/core/volcano.module';
+import { DemoController } from './controllers/demo.controller';
+import { DemoMiddleware } from './middlewares/demo.middleware';
+import { DemoService } from './services/demo.service';
+import { DummyDemoService } from './services/dummy-demo.service';
 
 const PORT = 3000;
 const server = Volcano.createServer({
     controllers : [
-        CarController,
-        ChatController
+        DemoController
     ],
     middlewares: [
-        Logger,
-        Guard
+        DemoMiddleware
     ],
     services: [
-        { interface: CarRepository, use: InMemoryCarRepository }
+        {interface: DemoService, use: DummyDemoService}
     ]
 });
 
 server.listen(PORT, null, () => {
     console.log(`Server started at port ${PORT}`);
 });
+```
+
+- demo.controller.ts : 
+
+```ts
+import {
+    Controller,
+    GET,
+    HttpController,
+    HttpStatusCode,
+    JsonResult,
+    Middleware,
+    Result,} from '../../node_modules/volcano-express/lib/core/http/volcano-http.module';
+import { Inject } from '../../node_modules/volcano-express/lib/core/injection/volcano-injection.module';
+import { DemoMiddleware } from '../middlewares/demo.middleware';
+import { DemoService } from '../services/demo.service';
+
+@Middleware(DemoMiddleware)
+@Controller()
+export class DemoController extends HttpController {
+
+    @Inject(DemoService) demoService: DemoService;
+
+    @GET('demo')
+    demo(): Result {
+        const content = this.demoService.demo();
+        return new JsonResult(HttpStatusCode.OK, content);
+    }
+}
+```
+
+- demo.middleware.ts :
+
+```ts
+import { Middleware, Request, Response } from '../../node_modules/volcano-express/lib/core/http/volcano-http.module';
+
+export class DemoMiddleware extends Middleware {  
+    intercept(request: Request, response: Response): void {
+        console.log('demo');
+    }
+}
+```
+
+- demo.service.ts :
+
+```ts
+export abstract class DemoService {
+    abstract demo();
+}
+```
+
+- dummy-demo.service.ts :
+
+```ts
+import { DemoService } from "./demo.service";
+
+export class DummyDemoService extends DemoService {
+    demo() {
+        return {
+            message: 'Demo'
+        }
+    }
+}
+```
+
+Once you have built and started the server, you should be able to test it with an http request :
+
+```dos
+GET/ http://localhost:3000/demo
+```
+
+You should receive a **200 OK** response with the following content if everything is working properly :
+
+```json
+{
+    "message": "Demo"
+}
 ```
 
 ## Dependency Injection
