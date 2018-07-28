@@ -1,4 +1,4 @@
-# Volcano
+# Volcano-express
 
 - [Installation](#installation)
 - [Get started](#get-started)

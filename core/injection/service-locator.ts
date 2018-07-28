@@ -3,7 +3,6 @@ export class ServiceLocator {
     private static services: Map<string, any> = new Map<any, any>();
 
     static register<T extends { new(): T }>(abstract: any, concrete: any): void {
-        console.log('REGISTERING:', abstract.prototype.constructor.name, concrete.name, this.services);
         const key: string = abstract.prototype.constructor.name.toLowerCase();
 
         const instance: any = new concrete();
@@ -14,7 +13,6 @@ export class ServiceLocator {
     }
 
     static resolve<T extends { new(): T }>(abstract: any): T {
-        console.log('RESOLVING:', abstract.prototype.constructor.name, this.services);
         const key: string = abstract.prototype.constructor.name.toLowerCase();
         if (!this.services.has(key)) {
             console.log(`Service is not registered: ${key}.`);
