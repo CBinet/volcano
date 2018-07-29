@@ -2,130 +2,73 @@
 
 - [Installation](#installation)
 - [Get started](#get-started)
-- [Dependency injection](#dependency-injection)
-- [Http Controller](#http-controller)
-- [Http Middleware](#http-middleware)
-- [Websocket Controller](#websocket-controller)
-
-## Installation
-
-```dos
-npm install volcano-express --save
- ```
+  - [Prerequisites](#prerequisites)
+  - [Create the project](#create-the-project)
+- [Dependency Injection Module](#dependency-injection-module)
+  - [Registering](#registering)
+  - [Resolving](#resolving)
+- [Http Module](#http-module)
+  - [Http Controller](#http-controller)
+  - [Http Middleware](#http-middleware)
+- [Websocket Module](#websocket-module)
+  - [Websocket Controller](#websocket-controller)
+  - [Websocket Middleware](#websocket-middleware)
 
 ## Get started
 
-First, you will need a **main.ts** file where your configure and start the express server. It is also good practice to keep your controllers, middlewares and services in separated files. Here is a quick working example to get started :
+### Prerequisites
 
-- main.ts : Place at the root of your source folder
+```dos
+npm install volcano-express-cli -g
+ ```
 
-```ts
-import { Volcano } from '../node_modules/volcano-express/lib/core/volcano.module';
-import { DemoController } from './controllers/demo.controller';
-import { DemoMiddleware } from './middlewares/demo.middleware';
-import { DemoService } from './services/demo.service';
-import { DummyDemoService } from './services/dummy-demo.service';
+### Create the project
+  
+To create all the files and import all the dependencies needed for a new project, simply use the **init** command from the CLI.  
+The **init** command will create all the files needed to get started.
 
-const PORT = 3000;
-const server = Volcano.createServer({
-    controllers : [
-        DemoController
-    ],
-    middlewares: [
-        DemoMiddleware
-    ],
-    services: [
-        {interface: DemoService, use: DummyDemoService}
-    ]
-});
-
-server.listen(PORT, null, () => {
-    console.log(`Server started at port ${PORT}`);
-});
+```dos
+volcano --init
 ```
 
-- demo.controller.ts : 
+You can find more informations on the CLI commands on the [Volcano-express CLI](https://www.npmjs.com/package/volcano-express-cli) npm package page.
 
-```ts
-import {
-    Controller,
-    GET,
-    HttpController,
-    HttpStatusCode,
-    JsonResult,
-    Middleware,
-    Result,} from '../../node_modules/volcano-express/lib/core/http/volcano-http.module';
-import { Inject } from '../../node_modules/volcano-express/lib/core/injection/volcano-injection.module';
-import { DemoMiddleware } from '../middlewares/demo.middleware';
-import { DemoService } from '../services/demo.service';
+### Start the server
 
-@Middleware(DemoMiddleware)
-@Controller()
-export class DemoController extends HttpController {
+To start the server, use the **npm start** command.  
+By default, the server starts at port 3000.
 
-    @Inject(DemoService) demoService: DemoService;
-
-    @GET('demo')
-    demo(): Result {
-        const content = this.demoService.demo();
-        return new JsonResult(HttpStatusCode.OK, content);
-    }
-}
+```dos
+npm start
 ```
 
-- demo.middleware.ts :
+If the server starts with no error, it outputs a success message in the console :
 
-```ts
-import { Middleware, Request, Response } from '../../node_modules/volcano-express/lib/core/http/volcano-http.module';
-
-export class DemoMiddleware extends Middleware {  
-    intercept(request: Request, response: Response): void {
-        console.log('demo');
-    }
-}
+```dos
+Server started at port 3000
 ```
 
-- demo.service.ts :
+### Test the server
 
-```ts
-export abstract class DemoService {
-    abstract demo();
-}
-```
-
-- dummy-demo.service.ts :
-
-```ts
-import { DemoService } from "./demo.service";
-
-export class DummyDemoService extends DemoService {
-    demo() {
-        return {
-            message: 'Demo'
-        }
-    }
-}
-```
-
-Once you have built and started the server, you should be able to test it with an http request :
+Once you have started the server, you should be able to test it with an http request at :
 
 ```dos
 GET/ http://localhost:3000/demo
 ```
 
-You should receive a **200 OK** response with the following content if everything is working properly :
+You should receive a 200 OK response with the following content if everything is working properly :
 
-```json
-{
-    "message": "Demo"
-}
+```dos
+"Demo"
 ```
 
-## Dependency Injection
+## Dependency Injection Module
+
+### Registering
 
 There are multiples ways to register your services to inject them into your controllers or other services :
 
-- Using the **@Injectable** decorator from the http module :
+- Using the **@Injectable** decorator :
 
 ```ts
 @Injectable(CarRepository)
@@ -134,7 +77,7 @@ export class InMemoryCarRepository {
 }
 ```
 
-- Using service registering the main file (which is the recommended way) :
+- Using service registering the main file :
 
 ```ts
 const server = Volcano.createServer({
@@ -152,9 +95,11 @@ const server = Volcano.createServer({
 ServiceLocator.register(CarRepository, InMemoryCarRepository);
 ```
 
-To inject the registered services into your controllers or others services, there are also a few ways.
+### Resolving
 
-- You can use the **@Inject** decorator from the http module (recommended way) :
+A few way are available to inject the registered services into your controllers or others services.
+
+- You can use the **@Inject** decorator :
 
 ```ts
 @Inject(CarRepository) private carRepository: CarRepository;
@@ -166,76 +111,77 @@ To inject the registered services into your controllers or others services, ther
 private carRepository: CarRepository = ServiceLocator.resolve(CarRepository);
 ```
 
-## Http Controller
+## Http Module
+
+### Http Controller
 
 ```ts
 @Controller()
-export class CarController extends HttpController {
-
-    @Inject(CarService) private carService: CarService;
-
-    @GET('cars')
-    getCars(): Result {
-        const cars = this.carService.findAll();
-        return new JsonResult(HttpStatusCode.OK, cars);
-    }
-
-    @GET('cars/:id')
-    getCar(id: string): Result {
-        const car = this.carService.find(id);
-        if (!car) return new JsonResult(HttpStatusCode.NOT_FOUND, {id});
-        return new JsonResult(HttpStatusCode.OK, car);
-    }
-
-    @POST('cars')
-    addCar(car: Car): Result {
-        this.carService.add(car);
-        return new JsonResult(HttpStatusCode.CREATED);
-    }
-
-    @PUT('cars/:id')
-    updateCar(id: string, car: Car): Result {
-        this.carService.update(id, car);
-        return new JsonResult(HttpStatusCode.ACCEPTED);
-    }
-
-    @DELETE('cars/:id')
-    deleteCar(id: string): Result {
-        this.carService.delete(id);
-        return new JsonResult(HttpStatusCode.ACCEPTED);
-    }
-}
+export class CarController extends HttpController {}
 ```
 
-### Http actions
+#### Http actions
+
+The following http actions are supported by the **HttpController** :
 
 - **GET**
 - **POST**
 - **PUT**
 - **DELETE**
 
-### Action parameters
+```ts
+@Controller()
+export class CarController extends HttpController {
+
+    @GET('cars')
+    getCars(): Result { ... }
+
+    @POST('cars')
+    addCar(car: Car): Result { ... }
+
+    @PUT('cars/:id')
+    updateCar(id: string, car: Car): Result { ... }
+
+    @DELETE('cars/:id')
+    deleteCar(id: string): Result { ... }
+}
+```
 
 The parameters of an **HttpAction** decorated method must be in this given order :
 The parameters from the route (i.e.: id in '/cars/:id) must be first, in appearing order. The body will always be the last parameter of a signature. **GET** decorated method cannot have a body.
 
-Example :
-
 ```ts
-@PUT('cars/:id')
-updateCar(id: string, car: Car): Result {
-    ...
+@Controller()
+export class CarController extends HttpController {
+
+    @PUT('cars/:id')
+    updateCar(id: string, car: Car): Result {
+        ...
+    }
 }
 ```
 
 In the above example, **id** is the first parameter because it comes from the route. The last parameter (**car**) is the request body.
 
-### Return types
+The **Result** that must be returned by an HttpAction needs an **HttpStatusCode**. The content is optional.  
+The following types are the ones available by default :
 
-- **JsonResult** : Returns JSON response with given status code.
-- **TextResult** : Returns TEXT response with given status code.
-- **HtmlResult** : Returns HTML response with given status code.
-- **XmlResult** : Returns XML response with given status code.
+- **JsonResult** : Returns JSON response
+- **TextResult** : Returns TEXT response
+- **HtmlResult** : Returns HTML response
+- **XmlResult** : Returns XML response
+
+```ts
+@Controller()
+export class CarController extends HttpController {
+
+    @GET('cars')
+    getCars(): Result {
+        const cars = ...
+        return new JsonResult(HttpStatusCode.OK, cars);
+    }
+}
+```
 
 You can also extend the **Result** class to implement a custom return type:
 
@@ -243,14 +189,20 @@ You can also extend the **Result** class to implement a custom return type:
 export class CustomResult extends Result {
 
     sendWith(response: Response): void {
-        ...
+        response.status(this.statusCode).send(...)
     }
 }
 ```
 
-## Http middleware
+### Http middleware
 
-You can add middlewares to intercept requests. You can create your own middleware by extending the **HttpMiddleware** class :
+Middlewares are used to intercept requests before an **HttpAction** from a [**HttpController**](#http-controller) is called.  
+You can add middlewares to a controller or a specific route to intercept requests.  
+When a request is intercepted, you have access to the actuals **express** request and response.
+
+#### Creating an http middleware
+
+You can create a middleware by extending the **HttpMiddleware** class :
 
 ```ts
 export class Logger extends HttpMiddleware {
@@ -262,7 +214,9 @@ export class Logger extends HttpMiddleware {
 }
 ```
 
-You can then add a middleware on a controller, which will apply it for all the routes owned by that controller :
+#### Applying a middleware to an http controller
+
+When you add a middleware on a controller, it will apply the middleware for all the routes of that controller :
 
 ```ts
 @Middleware(Logger) // <-- Added a middleware to all the routes
@@ -272,14 +226,22 @@ export class PingController extends HttpController {
 }
 ```
 
+#### Applying a middleware to a specific route
+
 You can also add it on specific routes :
 
 ```ts
-@GET('ping', [Logger]) // <-- Added a middleware to this specific route
-ping(): JsonResult {
-    ...
+@Controller()
+export class PingController extends HttpController {
+
+    @GET('ping', [Logger]) // <-- Added a middleware to this specific route
+    ping(): JsonResult {
+        ...
+    }
 }
 ```
+
+#### Http middlewares order
 
 When you have multiple middlewares applied to a controller or route, they will always apply in order of appearance in the method signature :
 
@@ -296,6 +258,7 @@ When you have middlewares on the controller and on a route, the middlewares from
 @Middleware(Logger) // <-- Logger will be first
 @Controller()
 export class PingController extends HttpController {
+
     @GET('ping', [Guard]) // <-- Guard will be second
     ping(): JsonResult {
         ...
@@ -303,30 +266,137 @@ export class PingController extends HttpController {
 }
 ```
 
-## Websocket Controller
+## Websocket Module
+
+### Websocket Controller
+
+#### Websocket actions
+
+The following websocket actions are supported by the **WebsocketController** :
+
+- **OnConnect**
+- **OnDisconnect**
+- **OnMessage**
 
 ```ts
 @WebsocketController()
 export class ChatController extends WsController {
 
     @OnConnect()
-    onConnect(server: WebSocket.Server): WebsocketResponse {
-        return new JsonWebsocketResponse({message: 'hello'}, broadcast: true);
-    }
-
-    @On('all')
-    onSendMessage(message: string, server: WebSocket.Server) : WebsocketResponse {
-        return new TextWebsocketResponse(message, broadcast: true);
-    }
-
-    @On('whisper')
-    onSendWhisper(person: string, message: string, server: WebSocket.Server) : WebsocketResponse {
-        return new XmlWebsocketResponse({message});
-    }
+    onConnect(websocket: Websocket, server: Server): WebsocketResponse { ... }
 
     @OnDisconnect()
-    onDisconnect(server: WebSocket.Server) : WebsocketResponse {
-        return new JsonWebsocketResponse({message: 'Goodbye'}, broadcast: true);
+    onDisconnect(websocket: Websocket, server: Server) : WebsocketResponse { ... }
+
+    @On('message')
+    onSendMessage(message: string, websocket: Websocket, server: Server) : WebsocketResponse { ... }
+}
+```
+
+The parameters of a **WebsocketAction** decorated method must be in this given order :
+
+- **OnConnect** and **OnDisconnect** : The OnConnect and OnDisconnect have both access to the websocket instance and the server instance in that given order.
+
+```ts
+@OnConnect()
+onConnect(websocket: Websocket, server: Server): WebsocketResponse { ... }
+
+@OnDisconnect()
+onDisconnect(websocket: Websocket, server: Server) : WebsocketResponse { ... }
+```
+
+- **OnMessage** : The OnMessage method has as first parameter the body of the message. The OnMessage have also access to the websocket instance and the server instance in that given order as the last two (2) parameters of the signature.
+
+```ts
+@On('message')
+onSendMessage(message: string, websocket: Websocket, server: Server) : WebsocketResponse { ... }
+```
+
+The **WebsocketResponse** that must be returned by WebsocketAction need a content.  
+You can specify which clients to send the response to with the broadcast property or the receivers list.
+The following types are the ones available by default :
+
+- **JsonWebsocketResponse** : Returns JSON response
+- **TextWebsocketResponse** : Returns TEXT response
+- **XmlWebsocketResponse** : Returns XML response
+
+For example, a **JsonWebsocketResponse** return would look like this :
+
+```ts
+@OnConnect()
+onConnect(websocket: Websocket, server: Server): WebsocketResponse {
+    const sessionId = ...
+    return new JsonWebsocketResponse({sessionId, event: "Has come online"}, broadcast: true);
+}
+```
+
+This would send a message to all the connected clients which says that someone has just come online :
+
+```json
+{
+    "sessionId" : "...",
+    "event" : "Has come online"
+}
+```
+
+You can also extend the **WebsocketResponse** class to implement a custom return type:
+
+```ts
+export class CustomWebsocketResponse extends WebsocketResponse {
+
+    sendWith(server: Server, websocket: Websocket) {
+        const content = ...
+        this.send(server, websocket, content);
     }
 }
 ```
+
+### Websocket middleware
+
+Middlewares are used to intercept requests before an **WebsocketAction** from a [**WebsocketController**](#websocket-controller) is called.  
+You can add middlewares to a controller or a specific action to intercept requests.
+
+#### Creating a websocket middleware
+
+You can create a middleware by extending the **WebsocketMiddleware** class :
+
+```ts
+export class Logger extends HttpMiddleware {
+
+    intercept(request: Request, response: Response): boolean {
+        console.log('I am interceptor');
+        return true;
+    }
+}
+```
+
+#### Applying a middleware to a websocket controller
+
+When you add a middleware on a controller, it will apply the middleware for all the actions of that controller :
+
+```ts
+@Middleware(Logger) // <-- Added a middleware to all the routes
+@WebsocketController()
+export class ChatController extends WsController {
+    ...
+}
+```
+
+#### Applying a middleware to a specific action
+
+You can also add it on specific action :
+
+```ts
+@WebsocketController()
+export class ChatController extends WsController {
+
+    @OnConnect([Logger]) // <-- Added a middleware to this specific action
+    onConnect(websocket: Websocket, server: Server): WebsocketResponse {
+        ...
+    }
+}
+```
+
+#### Websocket middlewares order
+
+Look at the [Http middlewares order](#http-middlewares-order) section for how the middlewares order works.
