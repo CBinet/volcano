@@ -1,6 +1,6 @@
 {
   "name": "volcano-express",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "keywords": [
     "express",
     "framework",
@@ -12,6 +12,7 @@
     "js",
     "nodejs"
   ],
+  "homepage": "https://github.com/CBinet/volcano",
   "description": "A framework built on top of the express.js library",
   "main": "main.js",
   "types": "main.d.ts",
