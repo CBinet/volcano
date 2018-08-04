@@ -11,7 +11,7 @@ import { CarRepository } from './services/repositories/car-repository';
 import { InMemoryCarRepository } from './services/repositories/in-memory-car-repository';
 
 const PORT = 3000;
-const server = Volcano.createServer({
+const { app, server } = Volcano.createServer({
     controllers : [
         PingController,
         CarController,

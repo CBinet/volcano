@@ -22,7 +22,7 @@ import { Websocket } from './ws/server/websocket';
 
 export class Volcano {
 
-    static createServer(config?: VolcanoConfig) {
+    static createServer(config?: VolcanoConfig): {app: Express, server: http.Server} {
 
         if (config.services) {
             config.services
@@ -38,7 +38,7 @@ export class Volcano {
         HttpOperationRegister.get().forEach(value => operations.push(value));
         operations.forEach(Volcano.registerHttpOperation(application));
 
-        return server;
+        return { app: application, server};
     }
 
     private static expressInitialize() {
