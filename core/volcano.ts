@@ -20,6 +20,8 @@ import { WebsocketResponse } from './ws/responses/websocket-response';
 import { Server } from './ws/server/server';
 import { Websocket } from './ws/server/websocket';
 
+var cors = require('cors')
+
 export class Volcano {
 
     static createServer(config?: VolcanoConfig): {app: Express, server: http.Server} {
@@ -29,7 +31,7 @@ export class Volcano {
             .forEach(service => ServiceLocator.register(service.interface, service.use));
         }
 
-        const { server, application }: { server: http.Server; application: Express; } = Volcano.expressInitialize();
+        const { server, application }: { server: http.Server; application: Express; } = Volcano.expressInitialize(config.cors);
 
         const wsOperations: WsOperation[] = WsOperationRegister.get();
         wsOperations.forEach(Volcano.registerWebsocketOperation(server));
@@ -41,9 +43,12 @@ export class Volcano {
         return { app: application, server};
     }
 
-    private static expressInitialize() {
+    private static expressInitialize(useCors: boolean) {
         const application: Express = express();
         application.use(bodyParser.json());
+        if (useCors) {
+            application.use(cors());
+        }
         const server = http.createServer(application);
         return { server, application };
     }

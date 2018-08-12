@@ -12,6 +12,7 @@ import { InMemoryCarRepository } from './services/repositories/in-memory-car-rep
 
 const PORT = 3000;
 const { app, server } = Volcano.createServer({
+    cors: true,
     controllers : [
         PingController,
         CarController,
