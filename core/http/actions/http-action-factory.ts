@@ -11,6 +11,8 @@ export class HttpActionFactory {
                 descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
             }
             
+            const async: boolean = true;
+
             const params = HttpActionFactory.extractInnerFunctionParameters(descriptor);
 
             const innerFunction = HttpActionFactory.extractInnerFunction(descriptor);
@@ -20,6 +22,7 @@ export class HttpActionFactory {
             }
 
             const operation: HttpOperation = {
+                async,
                 action,
                 route,
                 operationName: propertyKey,
