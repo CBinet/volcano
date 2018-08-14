@@ -4,10 +4,13 @@ import {
     GET,
     HttpController,
     HttpStatusCode,
-    JsonResult,
+    Result,
     Middleware,
     POST,
     PUT,
+    Request,
+    Response,
+    JsonResult
 } from '../../core/http/volcano-http.module';
 import { Inject } from '../../core/injection/volcano-injection.module';
 import { Car } from '../common/models/car';
@@ -22,32 +25,32 @@ export class CarController extends HttpController {
     @Inject(CarService) private carService: CarService;
 
     @GET('cars')
-    getCars(): JsonResult {
-        const cars = this.carService.findAll();
+    async getCars(request: Request, response: Response): Promise<Result> {
+        const cars = await this.carService.findAll();
         return new JsonResult(HttpStatusCode.OK, cars);
     }
 
     @GET('cars/:id')
-    getCar(id: string): JsonResult {
+    getCar(id: string): Result {
         const car = this.carService.find(id);
         if (!car) return new JsonResult(HttpStatusCode.NOT_FOUND, {id});
         return new JsonResult(HttpStatusCode.OK, car);
     }
 
     @POST('cars', [Guard])
-    addCar(car: Car): JsonResult {
+    addCar(car: Car): Result {
         this.carService.add(car);
         return new JsonResult(HttpStatusCode.CREATED);
     }
 
     @PUT('cars/:id', [Guard])
-    updateCar(id: string, car: Car): JsonResult {
+    updateCar(id: string, car: Car): Result {
         this.carService.update(id, car);
         return new JsonResult(HttpStatusCode.ACCEPTED);
     }
 
     @DELETE('cars/:id', [Guard])
-    deleteCar(id: string): JsonResult {
+    deleteCar(id: string): Result {
         this.carService.delete(id);
         return new JsonResult(HttpStatusCode.ACCEPTED);
     }

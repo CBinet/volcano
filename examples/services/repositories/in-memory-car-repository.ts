@@ -7,12 +7,12 @@ export class InMemoryCarRepository extends CarRepository {
 
     private cars: Map<string, Car> = new Map([['123', {id: '123', model: 'Toyota', year: 2002}]]);
 
-    findAll(): Car[] {
+    async findAll(): Promise<Car[]> {
         const cars = [];
         this.cars.forEach((car, key) => {
             cars.push(car);
         });
-        return cars;
+        return Promise.resolve(cars);
     }
 
     find(id: string): Car {

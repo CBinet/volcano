@@ -19,11 +19,11 @@ export class HttpOperationFactory {
 
             var responseSent: boolean = HttpOperationFactory.applyMiddlewares(middlewares, request, response);
             if (!responseSent) {
-                const result: Result = this.callInnerOperation(operation, params);
-                if (result) {
-                    result.sendWith(response);
-                }
-                
+                this.callInnerOperation(operation, params).then((result: Result) => {
+                    if (result) {
+                        result.sendWith(response);
+                    }
+                });
             }
         }
         catch (error) {
@@ -51,9 +51,10 @@ export class HttpOperationFactory {
         return params;
     }
     
-    private static callInnerOperation(operation: HttpOperation, params: any[]): Result {
+    private static async callInnerOperation(operation: HttpOperation, params: any[]): Promise<Result> {
         const controller = ControllerRegister.resolve(operation.controller);
-        const result: Result = controller[operation.operationName].apply(controller, params);
+        console.log(params[2].json);
+        const result: Result = await controller[operation.operationName].apply(controller, params);
         return result;
     }
 

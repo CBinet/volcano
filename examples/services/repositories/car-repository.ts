@@ -1,7 +1,7 @@
 import { Car } from "../../common/models/car";
 
 export abstract class CarRepository {
-    abstract findAll(): Car[];
+    abstract async findAll(): Promise<Car[]>;
 
     abstract find(id: string): Car;
 

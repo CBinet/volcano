@@ -180,9 +180,15 @@ export class Volcano {
     private static createHttpOperation(operation: HttpOperation) {
 
         if (operation.async) {
-            return async (request: Request, response: Response) => {
-                HttpOperationFactory.createOperation(operation, request, response);
+            const asyncMiddleware = fn =>
+            (req, res, next) => {
+              Promise.resolve(fn(req, res, next))
+                .catch(next);
             };
+
+            return asyncMiddleware(async (request: Request, response: Response) => {
+                HttpOperationFactory.createOperation(operation, request, response);
+            });
         }
         return (request: Request, response: Response) => {
             HttpOperationFactory.createOperation(operation, request, response);

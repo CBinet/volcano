@@ -8,8 +8,8 @@ export class CarService {
 
     @Inject(CarRepository) private carRepository: CarRepository;
 
-    findAll(): Car[] {
-        const cars = this.carRepository.findAll();
+    async findAll(): Promise<Car[]> {
+        const cars = await this.carRepository.findAll();
         return cars;
     }
 
