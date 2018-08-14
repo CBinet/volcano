@@ -20,7 +20,7 @@ export class HttpOperationFactory {
             var responseSent: boolean = HttpOperationFactory.applyMiddlewares(middlewares, request, response);
             if (!responseSent) {
                 const result: Result = this.callInnerOperation(operation, params);
-                if (response) {
+                if (result) {
                     result.sendWith(response);
                 }
                 
