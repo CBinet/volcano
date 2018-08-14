@@ -10,7 +10,7 @@ export class HttpOperationFactory {
 
     static createOperation(operation: HttpOperation, request: Request, response: Response) {
 
-        let params: any[] = this.extractRequestParameters(operation.params, request);
+        let params: any[] = this.extractRequestParameters(operation.params, request, response);
 
         try {
             let middlewares = HttpMiddlewareRegister.resolve(operation.controller, operation.route);
@@ -36,12 +36,14 @@ export class HttpOperationFactory {
         return responseSent;
     }
 
-    private static extractRequestParameters(paramKeys: any[], request: Request) {
+    private static extractRequestParameters(paramKeys: any[], request: Request, response: Response) {
         let params: any[] = [];
         paramKeys.forEach(key => {
             params.push(request.params[key]);
         });
         params.push(request.body);
+        params.push(request);
+        params.push(response);
         params = params.filter(param => param != undefined);
         return params;
     }
