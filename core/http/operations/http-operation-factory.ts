@@ -23,6 +23,8 @@ export class HttpOperationFactory {
                     if (result) {
                         result.sendWith(response);
                     }
+                }).catch(error => {
+                    this.sendErrorDetails(error, response);
                 });
             }
         }
