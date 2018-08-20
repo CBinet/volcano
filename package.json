@@ -1,6 +1,6 @@
 {
   "name": "volcano-express",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "keywords": [
     "express",
     "framework",
@@ -18,7 +18,7 @@
   "types": "main.d.ts",
   "scripts": {
     "test": "jasmine-ts \"spec/**/*.spec.ts\"",
-    "build": "tsc",
+    "build": "tsc --declaration",
     "start": "(npm run build && node lib/examples/main.js)"
   },
   "author": "Charles Binet",
