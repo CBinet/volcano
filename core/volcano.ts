@@ -90,39 +90,36 @@ export class Volcano {
             const innerFunction = operation.onMessage[message.message];
             const params = this.extractMessageParameters(innerFunction.params, message.content).filter(param => param);
             params.push(websocket, websocketServer);
-            try {
-                const onMessageResult: WebsocketResponse = innerFunction.function.apply(controller, params);
+            const onMessageResult: WebsocketResponse = innerFunction.function.apply(controller, params).then((onMessageResult: WebsocketResponse) => {
                 onMessageResult.sendWith(websocketServer, websocket);
-            } catch (error) {
+            }).catch(error => {
                 const errorResult: WebsocketResponse = new JsonWebsocketResponse({error: error.message}, false, [websocket])
                 errorResult.sendWith(websocketServer, websocket);
-            }
+            });
         }
     }
 
     private static callOnConnect(controller: any, operation: WsOperation, middlewares: any[], websocket: Websocket, websocketServer: Server, optionalParams: (Websocket | Server)[]) {
         var responseSent: boolean = this.applyMiddlewares(middlewares, null, <Websocket>websocket, websocketServer);
         if (!responseSent) {
-            try {
-                const onConnectResult: WebsocketResponse = operation.onConnect.function.apply(controller, optionalParams);
+            operation.onConnect.function.apply(controller, optionalParams).then((onConnectResult: WebsocketResponse) => {
                 onConnectResult.sendWith(websocketServer, websocket);
-            } catch (error) {
+            }).catch(error => {
                 const errorResult: WebsocketResponse = new JsonWebsocketResponse({error: error.message}, false, [websocket])
                 errorResult.sendWith(websocketServer, websocket);
-            }
+            });
         }
     }
 
     private static callOnDisconnect(controller: any, operation: WsOperation, middlewares: any[], websocket: Websocket, websocketServer: Server, optionalParams: (Websocket | Server)[]) {
         var responseSent: boolean = this.applyMiddlewares(middlewares, null, <Websocket>websocket, websocketServer);
         if (!responseSent) {
-            try {
-                const onConnectResult: WebsocketResponse = operation.onDisconnect.function.apply(controller, optionalParams);
-                onConnectResult.sendWith(websocketServer, websocket);
-            } catch (error) {
+            operation.onDisconnect.function.apply(controller, optionalParams).then((onDisconnectResult: WebsocketResponse) => {
+                onDisconnectResult.sendWith(websocketServer, websocket);
+            }).catch(error => {
                 const errorResult: WebsocketResponse = new JsonWebsocketResponse({error: error.message}, false, [websocket])
-                errorResult.sendWith(websocketServer, websocket);
-            }
+            errorResult.sendWith(websocketServer, websocket);
+            });
         }
     }
 

@@ -5,7 +5,7 @@ import { Websocket } from '../server/websocket';
 export abstract class WsController {
     constructor(public route?: string) {}
 
-    abstract onConnect(websocket: Websocket, server: Server) : WebsocketResponse;
+    abstract async onConnect(websocket: Websocket, server: Server) : Promise<WebsocketResponse>;
 
-    abstract onDisconnect(websocket: Websocket, server: Server) : WebsocketResponse;
+    abstract async onDisconnect(websocket: Websocket, server: Server) : Promise<WebsocketResponse>;
 }   

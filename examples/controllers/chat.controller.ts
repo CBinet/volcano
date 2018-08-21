@@ -22,7 +22,7 @@ export class ChatController extends WsController {
     @Inject(ChatService) chatService: ChatService;
 
     @OnConnect([Logger])
-    onConnect(websocket: Websocket, server: Server): WebsocketResponse {
+    async onConnect(websocket: Websocket, server: Server): Promise<WebsocketResponse> {
 
         const sessionId = this.chatService.setOnline(websocket);
         
@@ -30,13 +30,13 @@ export class ChatController extends WsController {
     }
 
     @On('all', [Guard, Logger])
-    onSendMessage(message: string, websocket: Websocket, server: Server) : WebsocketResponse {
+    async onSendMessage(message: string, websocket: Websocket, server: Server) : Promise<WebsocketResponse> {
 
         return new JsonWebsocketResponse({person: websocket.sessionId, message}, true);
     }
 
     @On('whisper', [Guard, Logger])
-    onSendWhisper(person: string, message: string, websocket: Websocket, server: Server) : WebsocketResponse {
+    async onSendWhisper(person: string, message: string, websocket: Websocket, server: Server) : Promise<WebsocketResponse> {
 
         const client: Websocket = this.chatService.getUserWithSessionId(person);
 
@@ -46,7 +46,7 @@ export class ChatController extends WsController {
     }
 
     @OnDisconnect([Logger])
-    onDisconnect(websocket: Websocket, server: Server) : WebsocketResponse {
+    async onDisconnect(websocket: Websocket, server: Server) : Promise<WebsocketResponse> {
 
         this.chatService.setOffline(websocket.sessionId);
 
